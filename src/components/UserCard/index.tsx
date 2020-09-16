@@ -3,6 +3,11 @@ import {View, StyleSheet, Image, Text, TouchableOpacity} from 'react-native';
 import {hs, ms, vs} from '../../utils/scaling';
 
 interface Props {
+  img: string;
+  name: string;
+  lastMsg: string;
+  lastTimeActive: string;
+  isOnline: boolean;
   onPress?: () => void;
 }
 
@@ -14,18 +19,26 @@ const UserCard: React.FC<Props> = (props) => {
           <Image
             style={style.img}
             source={{
-              uri:
-                'https://i.pinimg.com/originals/31/a0/d5/31a0d596f1e215b5825333f419645dcb.jpg',
+              uri: props.img,
             }}
           />
-          <View style={style.activePoint} />
+          <View
+            style={[
+              style.activePoint,
+              props.isOnline
+                ? {backgroundColor: '#4ADC61'}
+                : {backgroundColor: '#D0D0D0'},
+            ]}
+          />
         </View>
-        <View style={style.messageHolder}>
-          <Text style={style.txtUsername}>Dianna Smiley</Text>
-          <Text style={style.txtMessage}>Hey! What's up</Text>
-        </View>
-        <View style={style.lastTimeActive}>
-          <Text style={style.txtLastTimeActive}>3m ago</Text>
+        <View style={style.contentHolder}>
+          <View style={style.messageHolder}>
+            <Text style={style.txtUsername}>{props.name}</Text>
+            <Text style={style.txtMessage}>{props.lastMsg}</Text>
+          </View>
+          <View style={style.lastTimeActive}>
+            <Text style={style.txtLastTimeActive}>{props.lastTimeActive}</Text>
+          </View>
         </View>
       </View>
     </TouchableOpacity>
@@ -39,8 +52,8 @@ const style = StyleSheet.create({
     flexDirection: 'row',
   },
   avatarContainer: {
-    width: hs(80),
-    height: '100%',
+    width: hs(75),
+    height: hs(75),
     backgroundColor: 'white',
   },
   img: {
@@ -49,19 +62,25 @@ const style = StyleSheet.create({
     borderRadius: vs(40),
   },
   activePoint: {
-    top: vs(55),
-    left: hs(55),
-    height: vs(15),
-    width: vs(15),
+    top: vs(58),
+    left: hs(52),
+    height: vs(14),
+    width: vs(14),
     backgroundColor: '#04B31A',
     borderRadius: vs(10),
     position: 'absolute',
     borderColor: 'white',
     borderWidth: 1,
   },
+  contentHolder: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    borderBottomWidth: 0.5,
+    borderBottomColor: '#C7C7C7',
+  },
   messageHolder: {
     height: '100%',
-    width: hs(210),
+    width: hs(230),
     backgroundColor: 'white',
     justifyContent: 'center',
     paddingLeft: hs(8),
@@ -73,7 +92,6 @@ const style = StyleSheet.create({
   },
   txtUsername: {
     fontSize: ms(18),
-    fontWeight: 'bold',
     marginBottom: vs(5),
   },
   txtMessage: {
@@ -81,7 +99,9 @@ const style = StyleSheet.create({
   },
   txtLastTimeActive: {
     marginTop: vs(18),
-    fontSize: ms(14),
+    fontSize: ms(12),
+    color: '#848484',
+    alignItems: 'flex-end',
   },
 });
 
