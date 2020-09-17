@@ -3,6 +3,7 @@ import io from 'socket.io-client';
 export interface StoreProviderInterface {
   id?: Data;
   socket?: Socket;
+  darkTheme?: Data;
 }
 
 interface Data {

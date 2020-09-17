@@ -1,4 +1,4 @@
-import {useNavigation} from '@react-navigation/native';
+import {useNavigation, useTheme} from '@react-navigation/native';
 import React, {useContext, useState, useEffect} from 'react';
 import {
   View,
@@ -11,29 +11,21 @@ import Route from '../../utils/route';
 import {StoreProviderInterface, GlobalContext} from '../../utils/storeProvider';
 import MessageApi from '../../api/message';
 import {vs, hs, ms} from '../../utils/scaling';
-import UserCard from '../../components/UserCard';
 import {Icon} from 'react-native-elements';
 import {Image} from 'react-native';
-interface Props {}
-
+import UserCard from '../../components/UserCard';
+import {ThemeContext} from '../../../App';
+import {Color} from '../../utils/theme';
 const RoomsScreen = () => {
   const {id, socket} = useContext<StoreProviderInterface>(GlobalContext);
-  const [userId, setUserId] = useState();
+  const [userId, setUserId] = useState<string>();
   const [userActiveList, setUserActiveList] = useState<[]>([]);
 
   const handleUserId = (value: string) => setUserId(value);
 
-  const onConnect = async () => {
-    socket!.data.emit('send', userId);
-  };
-
-  const onDisconnect = async () => {
-    const res = await MessageApi.getMessages();
-    console.log(res);
-  };
-
   const navigator = useNavigation();
-
+  const {isDarkMode, setIsDarkMode} = useContext(ThemeContext);
+  const {colors} = useTheme();
   // useEffect(() => {
   //   const res = async () => {
   //     const res = await MessageApi.getMessages();
@@ -50,13 +42,16 @@ const RoomsScreen = () => {
   // }, [socket]);x`
   const isActive = true;
   return (
-    <View style={style.container}>
-      <View style={style.header}>
+    <View style={{...style.container, backgroundColor: colors.background}}>
+      <View style={{...style.header, backgroundColor: colors.background}}>
         <Icon
           name="bell-outline"
           type="material-community"
           size={vs(25)}
-          color={'#2F2F2F'}
+          color={colors.icon}
+          onPress={() => {
+            setIsDarkMode(!isDarkMode);
+          }}
         />
         <View style={style.avatarContainer}>
           <Image

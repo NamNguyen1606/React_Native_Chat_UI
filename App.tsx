@@ -1,16 +1,32 @@
-import React from 'react';
+import React, {useState, useMemo} from 'react';
 import MainStack from './src/routes/mainStack';
 import {NavigationContainer} from '@react-navigation/native';
 import StoreProvider from './src/utils/storeProvider';
-interface Props {}
+import {MyDefaultTheme, MyDarkTheme} from './src/utils/theme';
+
+interface ThemeData {
+  isDarkMode: boolean;
+  setIsDarkMode: Function;
+}
+export const ThemeContext = React.createContext<ThemeData>(null);
 
 const App = () => {
+  const [isDark, setIsDark] = useState<boolean>(false);
+  const themeProvider = useMemo(
+    (): ThemeData => ({
+      isDarkMode: isDark,
+      setIsDarkMode: setIsDark,
+    }),
+    [isDark],
+  );
   return (
-    <StoreProvider>
-      <NavigationContainer>
-        <MainStack />
-      </NavigationContainer>
-    </StoreProvider>
+    <ThemeContext.Provider value={themeProvider}>
+      <StoreProvider>
+        <NavigationContainer theme={isDark ? MyDarkTheme : MyDefaultTheme}>
+          <MainStack />
+        </NavigationContainer>
+      </StoreProvider>
+    </ThemeContext.Provider>
   );
 };
 export default App;

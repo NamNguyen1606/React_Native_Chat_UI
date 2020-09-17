@@ -16,7 +16,11 @@ const MainStack = () => {
         component={RoomsScreen}
         options={{headerShown: false}}
       />
-      <Stack.Screen name={Route.ChatScreen} component={ChatRoomScreen} />
+      <Stack.Screen
+        name={Route.ChatScreen}
+        component={ChatRoomScreen}
+        options={{headerShown: false}}
+      />
     </Stack.Navigator>
   );
 };
