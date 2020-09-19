@@ -1,12 +1,10 @@
 import AxiosClient from './axiosClient';
 export default class MessageApi {
   static getMessages = () => {
-    const res = AxiosClient.get('messages');
-    return res;
+    return AxiosClient.get('messages');
   };
 
-  static postMessage = (message: string) => {
-    const res = AxiosClient.post('messages', {msg: message});
-    return res;
+  static postMessage = async (message: string) => {
+    return AxiosClient.post('messages', {msg: message});
   };
 }

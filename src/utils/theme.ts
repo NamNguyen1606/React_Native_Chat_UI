@@ -20,10 +20,13 @@ export const MyDarkTheme = {
   ...DarkTheme,
   colors: {
     ...DarkTheme.colors,
-    background: 'black',
-    subText: '#FBFDFE',
-    ReceiverBubble: '',
-    senderBubble: '',
+    background: '#19191B',
+    text: '#E2E2E4',
+    border: '#252527',
+    card: '#2B2B33',
+    subText: 'white',
+    ReceiverBubble: '#2B343B',
+    senderBubble: '#1E2225',
     icon: 'blue',
   },
 };
@@ -32,10 +35,12 @@ export const MyDefaultTheme: Theme = {
   colors: {
     ...DefaultTheme.colors,
     background: 'white',
-    text: 'white',
+    text: 'black',
+    border: '#9B9C9D',
+    card: '#F1F1F3',
     subText: '#9B9C9D',
-    ReceiverBubble: '',
-    senderBubble: '',
+    ReceiverBubble: '#F2F6F9',
+    senderBubble: '#DCF4FE',
     icon: '',
   },
 };

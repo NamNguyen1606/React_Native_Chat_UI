@@ -1,3 +1,4 @@
+import {useTheme} from '@react-navigation/native';
 import React from 'react';
 import {View, StyleSheet, Image, Text, TouchableOpacity} from 'react-native';
 import {hs, ms, vs} from '../../utils/scaling';
@@ -12,6 +13,7 @@ interface Props {
 }
 
 const UserCard: React.FC<Props> = (props) => {
+  const {colors} = useTheme();
   return (
     <TouchableOpacity onPress={props.onPress}>
       <View style={style.container}>
@@ -31,13 +33,19 @@ const UserCard: React.FC<Props> = (props) => {
             ]}
           />
         </View>
-        <View style={style.contentHolder}>
+        <View style={{...style.contentHolder, borderColor: colors.border}}>
           <View style={style.messageHolder}>
-            <Text style={style.txtUsername}>{props.name}</Text>
-            <Text style={style.txtMessage}>{props.lastMsg}</Text>
+            <Text style={{...style.txtUsername, color: colors.text}}>
+              {props.name}
+            </Text>
+            <Text style={{...style.txtMessage, color: colors.text}}>
+              {props.lastMsg}
+            </Text>
           </View>
           <View style={style.lastTimeActive}>
-            <Text style={style.txtLastTimeActive}>{props.lastTimeActive}</Text>
+            <Text style={{...style.txtLastTimeActive, color: colors.text}}>
+              {props.lastTimeActive}
+            </Text>
           </View>
         </View>
       </View>
@@ -48,13 +56,11 @@ const UserCard: React.FC<Props> = (props) => {
 const style = StyleSheet.create({
   container: {
     height: vs(80),
-    backgroundColor: 'white',
     flexDirection: 'row',
   },
   avatarContainer: {
     width: hs(75),
     height: hs(75),
-    backgroundColor: 'white',
   },
   img: {
     flex: 1,
@@ -62,31 +68,28 @@ const style = StyleSheet.create({
     borderRadius: vs(40),
   },
   activePoint: {
-    top: vs(58),
-    left: hs(52),
+    top: ms(52),
+    left: ms(52),
     height: vs(14),
     width: vs(14),
     backgroundColor: '#04B31A',
     borderRadius: vs(10),
     position: 'absolute',
     borderColor: 'white',
-    borderWidth: 1,
+    borderWidth: ms(1.2),
   },
   contentHolder: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     borderBottomWidth: 0.5,
-    borderBottomColor: '#C7C7C7',
   },
   messageHolder: {
     height: '100%',
     width: hs(230),
-    backgroundColor: 'white',
     justifyContent: 'center',
     paddingLeft: hs(8),
   },
   lastTimeActive: {
-    backgroundColor: 'white',
     height: '100%',
     width: '100%',
   },
@@ -100,7 +103,6 @@ const style = StyleSheet.create({
   txtLastTimeActive: {
     marginTop: vs(18),
     fontSize: ms(12),
-    color: '#848484',
     alignItems: 'flex-end',
   },
 });

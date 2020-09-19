@@ -20,7 +20,6 @@ const RoomsScreen = () => {
   const {id, socket} = useContext<StoreProviderInterface>(GlobalContext);
   const [userId, setUserId] = useState<string>();
   const [userActiveList, setUserActiveList] = useState<[]>([]);
-
   const handleUserId = (value: string) => setUserId(value);
 
   const navigator = useNavigation();
@@ -43,12 +42,17 @@ const RoomsScreen = () => {
   const isActive = true;
   return (
     <View style={{...style.container, backgroundColor: colors.background}}>
-      <View style={{...style.header, backgroundColor: colors.background}}>
+      <View
+        style={{
+          ...style.header,
+          backgroundColor: colors.background,
+          borderBottomColor: colors.border,
+        }}>
         <Icon
           name="bell-outline"
           type="material-community"
           size={vs(25)}
-          color={colors.icon}
+          color={colors.text}
           onPress={() => {
             setIsDarkMode(!isDarkMode);
           }}
@@ -75,14 +79,14 @@ const RoomsScreen = () => {
             name="account-plus-outline"
             type="material-community"
             size={vs(25)}
-            color={'#2F2F2F'}
+            color={colors.text}
           />
           <Icon
             name="magnify"
             type="material-community"
             style={{marginLeft: hs(10)}}
             size={vs(25)}
-            color={'#2F2F2F'}
+            color={colors.text}
           />
         </View>
       </View>
@@ -118,8 +122,7 @@ const style = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     paddingHorizontal: hs(10),
-    borderBottomWidth: 0.5,
-    borderBottomColor: '#C7C7C7',
+    borderBottomWidth: 1,
   },
   headerIconGroup: {
     flexDirection: 'row',
@@ -135,12 +138,11 @@ const style = StyleSheet.create({
   avatarContainer: {
     width: hs(42),
     height: hs(42),
-    backgroundColor: 'white',
     left: hs(20),
   },
   activePoint: {
-    top: vs(35),
-    left: hs(28),
+    top: ms(32),
+    left: ms(28),
     height: vs(13),
     width: vs(13),
     borderRadius: vs(10),

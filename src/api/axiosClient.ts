@@ -1,6 +1,6 @@
 import axios from 'axios';
 import queryString from 'query-string';
-const URL = 'http://192.168.1.83:5035/api';
+const URL = 'http://192.168.1.83:5035/api/';
 const AxiosClient = axios.create({
   baseURL: URL,
   headers: {

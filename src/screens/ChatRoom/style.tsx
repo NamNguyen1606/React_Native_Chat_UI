@@ -5,13 +5,12 @@ import {hs, vs, ms} from '../../utils/scaling';
 export const style = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: 'white',
   },
   header: {
     flexDirection: 'row',
     alignItems: 'center',
     height: vs(60),
-    borderBottomWidth: 0.5,
+    borderBottomWidth: 0.8,
     borderBottomColor: '#C7C7C7',
     paddingHorizontal: hs(15),
   },
@@ -32,17 +31,14 @@ export const style = StyleSheet.create({
   headerIconHolder: {
     flex: 1,
     flexDirection: 'row',
-    backgroundColor: 'white',
     justifyContent: 'space-evenly',
     alignItems: 'center',
   },
   middle: {
     flex: 1,
-    padding: hs(10),
   },
   bottom: {
     maxHeight: vs(150),
-    backgroundColor: 'white',
     flexDirection: 'row',
     alignItems: 'flex-end',
     paddingHorizontal: hs(5),
@@ -50,9 +46,11 @@ export const style = StyleSheet.create({
     borderTopWidth: 0.5,
     borderTopColor: '#C7C7C7',
   },
-  whiteSpace: {
-    backgroundColor: 'white',
-    height: vs(50),
+  footerWhiteSpace: {
+    height: vs(20),
+  },
+  headerWhiteSpace: {
+    height: vs(10),
   },
   activePoint: {
     height: hs(11),
@@ -84,7 +82,6 @@ export const style = StyleSheet.create({
     width: hs(250),
     justifyContent: 'space-between',
     alignItems: 'flex-end',
-    backgroundColor: '#F1F1F3',
     borderRadius: hs(20),
     marginLeft: hs(7),
     paddingLeft: hs(10),
@@ -105,4 +102,5 @@ export const style = StyleSheet.create({
   sentIcon: {
     marginLeft: hs(3),
   },
+  flatList: {paddingHorizontal: hs(10)},
 });

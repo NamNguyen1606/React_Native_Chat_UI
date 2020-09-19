@@ -1,7 +1,15 @@
 import React from 'react';
-import {View, StyleSheet, Image, Text} from 'react-native';
+import {
+  View,
+  StyleSheet,
+  Image,
+  Text,
+  StyleProp,
+  ViewStyle,
+} from 'react-native';
 import {hs, vs, ms} from '../../utils/scaling';
 import {Colors} from '../../utils/colors';
+import {useTheme} from '@react-navigation/native';
 
 interface Props {
   name: string;
@@ -9,9 +17,12 @@ interface Props {
   message: string;
   img: string;
   isUser: boolean;
+  style?: StyleProp<ViewStyle>;
 }
 
 const ChatBubble: React.FC<Props> = (props) => {
+  const {colors}: any = useTheme();
+
   const getStyleByIsUser: any = () => {
     return props.isUser
       ? {justifyContent: 'flex-end'}
@@ -19,11 +30,11 @@ const ChatBubble: React.FC<Props> = (props) => {
   };
   const getStyleBubbleColor = () => {
     return props.isUser
-      ? {backgroundColor: '#DCF4FE'}
-      : {backgroundColor: '#F2F6F9'};
+      ? {backgroundColor: colors.ReceiverBubble, borderBottomRightRadius: 0}
+      : {backgroundColor: colors.senderBubble, borderTopLeftRadius: 0};
   };
   return (
-    <View style={[style.container, getStyleByIsUser()]}>
+    <View style={[style.container, getStyleByIsUser(), props.style]}>
       {props.isUser || (
         <Image
           style={style.img}
@@ -38,7 +49,9 @@ const ChatBubble: React.FC<Props> = (props) => {
           <Text style={style.txtName}>{props.timestamp}</Text>
         </View>
         <View style={[style.messageHolder, getStyleBubbleColor()]}>
-          <Text style={style.txtMessage}>{props.message}</Text>
+          <Text style={{...style.txtMessage, color: colors.text}}>
+            {props.message}
+          </Text>
         </View>
       </View>
     </View>
