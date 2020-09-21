@@ -1,10 +1,11 @@
-import {useTheme, useNavigation} from '@react-navigation/native';
+import {useNavigation} from '@react-navigation/native';
 import React, {useState} from 'react';
 import {View, StyleSheet, Text} from 'react-native';
 import {Icon, Input} from 'react-native-elements';
 import {Button} from '../../components';
 import {vs, hs, ms} from '../../utils/scaling';
 import Route from '../../utils/route';
+import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 
 interface Props {}
 interface FormInfo {
@@ -18,7 +19,6 @@ const LoginScreen = () => {
     password: '',
   });
   const navigator = useNavigation();
-  const {colors} = useTheme();
   //HANDLE FORM
   const handleEmail = (value: string) => setInfo({...info, email: value});
   const handlePassword = (value: string) => setInfo({...info, password: value});
@@ -34,53 +34,56 @@ const LoginScreen = () => {
   };
 
   return (
-    <View style={[style.container, {backgroundColor: 'black'}]}>
-      {/* HEADER */}
-      <View style={style.header}>
-        <View style={style.logoBox}>
-          <Text style={style.txtLogoTittle}>PSC</Text>
+    <KeyboardAwareScrollView>
+      <View style={style.container}>
+        {/* HEADER */}
+        <View style={style.header}>
+          <View style={style.logoBox}>
+            <Text style={style.txtLogoTittle}>PSC</Text>
+          </View>
+        </View>
+        {/* BOTTOM */}
+        <View style={style.bottom}>
+          {/* <Text style={style.txtTittle}>Login</Text> */}
+          <Input
+            label="Email"
+            labelStyle={style.txtInputLabel}
+            placeholder="psc@gmail.com"
+            inputStyle={style.txtInput}
+            onChangeText={handleEmail}
+          />
+          <Input
+            label="Password"
+            labelStyle={style.txtInputLabel}
+            placeholder="******"
+            inputStyle={style.txtInput}
+            secureTextEntry={isShowPwd}
+            rightIcon={
+              <Icon
+                type="font-awesome"
+                name={isShowPwd ? 'eye-slash' : 'eye'}
+                onPress={showPwd}
+              />
+            }
+            onChangeText={handlePassword}
+          />
+          <Button tittle="LOGIN" isLoading={false} onPress={onLogin} />
+          <Text style={{marginTop: vs(50), fontSize: ms(14)}}>
+            Don't have any account?{' '}
+            <Text style={style.txtSignUp} onPress={onSignUp}>
+              {' '}
+              Sign Up
+            </Text>
+          </Text>
         </View>
       </View>
-      {/* BOTTOM */}
-      <View style={style.bottom}>
-        {/* <Text style={style.txtTittle}>Login</Text> */}
-        <Input
-          label="Email"
-          labelStyle={style.txtInputLabel}
-          placeholder="psc@gmail.com"
-          inputStyle={style.txtInput}
-          onChangeText={handleEmail}
-        />
-        <Input
-          label="Password"
-          labelStyle={style.txtInputLabel}
-          placeholder="******"
-          inputStyle={style.txtInput}
-          secureTextEntry={isShowPwd}
-          rightIcon={
-            <Icon
-              type="font-awesome"
-              name={isShowPwd ? 'eye-slash' : 'eye'}
-              onPress={showPwd}
-            />
-          }
-          onChangeText={handlePassword}
-        />
-        <Button tittle="LOGIN" isLoading={false} onPress={onLogin} />
-        <Text style={{marginTop: vs(50), fontSize: ms(14)}}>
-          Don't have any account?{' '}
-          <Text style={{color: '#049FE3', fontSize: ms(14)}} onPress={onSignUp}>
-            {' '}
-            Sign Up
-          </Text>
-        </Text>
-      </View>
-    </View>
+    </KeyboardAwareScrollView>
   );
 };
 const style = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: 'black',
   },
   header: {
     height: vs(180),
@@ -113,5 +116,6 @@ const style = StyleSheet.create({
   },
   txtInputLabel: {color: '#5D5D5D', fontSize: ms(17)},
   txtInput: {color: 'black', fontSize: ms(16)},
+  txtSignUp: {color: '#049FE3', fontSize: ms(14)},
 });
 export default LoginScreen;

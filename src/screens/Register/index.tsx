@@ -4,7 +4,7 @@ import {View, StyleSheet, Text} from 'react-native';
 import {Icon, Input} from 'react-native-elements';
 import {Button} from '../../components';
 import {vs, hs, ms} from '../../utils/scaling';
-import Route from '../../utils/route';
+import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 
 interface Props {}
 interface FormInfo {
@@ -48,90 +48,88 @@ const RegisterScreen = () => {
 
   const onRegister = () => console.log(info);
 
-  const onLogin = () => {
-    navigator.navigate(Route.HomeScreen);
-  };
-
   return (
-    <View style={style.container}>
-      <View style={style.header}>
-        <Icon
-          name="keyboard-backspace"
-          type="material-community"
-          size={ms(25)}
-          color={'white'}
-          onPress={onBack}
-        />
-        <Text style={style.txtHeader}>Register</Text>
-        <View />
-      </View>
-      <View style={style.bottom}>
-        <View style={style.nameContainer}>
+    <KeyboardAwareScrollView>
+      <View style={style.container}>
+        <View style={style.header}>
+          <Icon
+            name="keyboard-backspace"
+            type="material-community"
+            size={ms(25)}
+            color={'white'}
+            onPress={onBack}
+          />
+          <Text style={style.txtHeader}>Register</Text>
+          <View />
+        </View>
+        <View style={style.bottom}>
+          <View style={style.nameContainer}>
+            <Input
+              containerStyle={{width: hs(150), height: vs(80)}}
+              label="First Name"
+              labelStyle={style.txtInputLabel}
+              placeholder="Wick"
+              inputStyle={style.txtInput}
+              onChangeText={handleFirstName}
+            />
+            <Input
+              containerStyle={{width: hs(150), height: vs(80)}}
+              label="Last Name"
+              labelStyle={style.txtInputLabel}
+              placeholder="John"
+              inputStyle={style.txtInput}
+              onChangeText={handleLastName}
+            />
+          </View>
           <Input
-            containerStyle={{width: hs(150), height: vs(80)}}
-            label="First Name"
+            containerStyle={style.inputContainer}
+            label="Email"
             labelStyle={style.txtInputLabel}
-            placeholder="Wick"
+            placeholder="psc@gmail.com"
             inputStyle={style.txtInput}
-            onChangeText={handleFirstName}
+            onChangeText={handleEmail}
           />
           <Input
-            containerStyle={{width: hs(150), height: vs(80)}}
-            label="Last Name"
+            containerStyle={style.inputContainer}
+            label="Password"
             labelStyle={style.txtInputLabel}
-            placeholder="John"
+            placeholder="******"
             inputStyle={style.txtInput}
-            onChangeText={handleLastName}
+            secureTextEntry={isShowPwd}
+            rightIcon={
+              <Icon
+                type="font-awesome"
+                name={isShowPwd ? 'eye-slash' : 'eye'}
+                onPress={showPwd}
+              />
+            }
+            onChangeText={handlePassword}
+          />
+          <Input
+            containerStyle={style.inputContainer}
+            label="Confirm Password"
+            labelStyle={style.txtInputLabel}
+            placeholder="******"
+            inputStyle={style.txtInput}
+            secureTextEntry={isShowConfirmPwd}
+            rightIcon={
+              <Icon
+                type="font-awesome"
+                name={isShowConfirmPwd ? 'eye-slash' : 'eye'}
+                onPress={showConfirmPwd}
+              />
+            }
+            onChangeText={handleConfirmPassword}
+          />
+          <Button
+            style={{marginTop: vs(20)}}
+            tittle="Register"
+            isLoading={false}
+            onPress={onRegister}
           />
         </View>
-        <Input
-          containerStyle={style.inputContainer}
-          label="Email"
-          labelStyle={style.txtInputLabel}
-          placeholder="psc@gmail.com"
-          inputStyle={style.txtInput}
-          onChangeText={handleEmail}
-        />
-        <Input
-          containerStyle={style.inputContainer}
-          label="Password"
-          labelStyle={style.txtInputLabel}
-          placeholder="******"
-          inputStyle={style.txtInput}
-          secureTextEntry={isShowPwd}
-          rightIcon={
-            <Icon
-              type="font-awesome"
-              name={isShowPwd ? 'eye-slash' : 'eye'}
-              onPress={showPwd}
-            />
-          }
-          onChangeText={handlePassword}
-        />
-        <Input
-          containerStyle={style.inputContainer}
-          label="Confirm Password"
-          labelStyle={style.txtInputLabel}
-          placeholder="******"
-          inputStyle={style.txtInput}
-          secureTextEntry={isShowConfirmPwd}
-          rightIcon={
-            <Icon
-              type="font-awesome"
-              name={isShowConfirmPwd ? 'eye-slash' : 'eye'}
-              onPress={showConfirmPwd}
-            />
-          }
-          onChangeText={handleConfirmPassword}
-        />
-        <Button
-          style={{marginTop: vs(20)}}
-          tittle="Register"
-          isLoading={false}
-          onPress={onRegister}
-        />
       </View>
-    </View>
+    </KeyboardAwareScrollView>
   );
 };
 const style = StyleSheet.create({
@@ -143,7 +141,8 @@ const style = StyleSheet.create({
     height: vs(90),
     backgroundColor: 'black',
     flexDirection: 'row',
-    paddingHorizontal: hs(15),
+    paddingLeft: hs(15),
+    paddingRight: hs(35),
     alignItems: 'center',
     justifyContent: 'space-between',
   },
