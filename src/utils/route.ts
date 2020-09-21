@@ -1,5 +1,7 @@
 export default class Route {
   // Main stack
-  static Rooms = 'rooms';
+  static LoginScreen = 'loginScreen';
+  static RegisterScreen = 'registerScreen';
+  static HomeScreen = 'homeScreen';
   static ChatScreen = 'chatScreen';
 }

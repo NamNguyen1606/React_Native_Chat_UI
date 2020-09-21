@@ -1,4 +1,3 @@
-import {useNavigation, useTheme} from '@react-navigation/native';
 import React, {useContext, useState, useEffect} from 'react';
 import {
   View,
@@ -6,16 +5,18 @@ import {
   TextInput,
   TouchableOpacity,
   Text,
+  Image,
 } from 'react-native';
+import {useNavigation, useTheme} from '@react-navigation/native';
 import Route from '../../utils/route';
 import {StoreProviderInterface, GlobalContext} from '../../utils/storeProvider';
 import MessageApi from '../../api/message';
 import {vs, hs, ms} from '../../utils/scaling';
 import {Icon} from 'react-native-elements';
-import {Image} from 'react-native';
 import UserCard from '../../components/UserCard';
 import {ThemeContext} from '../../../App';
 import {Color} from '../../utils/theme';
+
 const RoomsScreen = () => {
   const {id, socket} = useContext<StoreProviderInterface>(GlobalContext);
   const [userId, setUserId] = useState<string>();
