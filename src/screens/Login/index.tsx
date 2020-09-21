@@ -6,6 +6,9 @@ import {Button} from '../../components';
 import {vs, hs, ms} from '../../utils/scaling';
 import Route from '../../utils/route';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
+import UserApi from '../../api/user.api';
+import User from '../../models/user.model';
+import Store from '../../utils/asyncStore';
 
 interface Props {}
 interface FormInfo {
@@ -13,6 +16,7 @@ interface FormInfo {
   password: string;
 }
 const LoginScreen = () => {
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   const [isShowPwd, setIsShowPwd] = useState<boolean>(true);
   const [info, setInfo] = useState<FormInfo>({
     email: '',
@@ -29,8 +33,28 @@ const LoginScreen = () => {
 
   const onSignUp = () => navigator.navigate(Route.RegisterScreen);
 
-  const onLogin = () => {
-    navigator.navigate(Route.HomeScreen);
+  const onLogin = async () => {
+    setIsLoading(true);
+    const res: any = await UserApi.login(info.email, info.password);
+    if (res.success) {
+      const user = new User({
+        id: res.data._id,
+        firstName: res.data.firstName,
+        lastName: res.data.lastName,
+        email: res.data.email,
+        password: res.data.password,
+        phone: res.data.phone,
+        token: res.data.token,
+        avatar: res.data.avatar,
+      });
+      await Store.saveUserData(user);
+      const data = await Store.getUserData();
+      console.log(data);
+      navigator.navigate(Route.HomeScreen);
+    } else {
+      console.log(res.message);
+    }
+    setIsLoading(false);
   };
 
   return (
@@ -62,12 +86,14 @@ const LoginScreen = () => {
               <Icon
                 type="font-awesome"
                 name={isShowPwd ? 'eye-slash' : 'eye'}
+                size={ms(18)}
+                color="#5D5D5D"
                 onPress={showPwd}
               />
             }
             onChangeText={handlePassword}
           />
-          <Button tittle="LOGIN" isLoading={false} onPress={onLogin} />
+          <Button tittle="LOGIN" isLoading={isLoading} onPress={onLogin} />
           <Text style={{marginTop: vs(50), fontSize: ms(14)}}>
             Don't have any account?{' '}
             <Text style={style.txtSignUp} onPress={onSignUp}>

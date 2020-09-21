@@ -7,7 +7,7 @@ import {useNavigation, useTheme} from '@react-navigation/native';
 import {Icon} from 'react-native-elements';
 import ChatBubble from '../../components/MessageBubble/index';
 import {style} from './style';
-import MessageApi from '../../api/message';
+import MessageApi from '../../api/message.api';
 import {FlatList} from 'react-native-gesture-handler';
 import SocketName from '../../utils/socketNamespace';
 interface Props {}

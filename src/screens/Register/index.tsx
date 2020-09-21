@@ -5,6 +5,10 @@ import {Icon, Input} from 'react-native-elements';
 import {Button} from '../../components';
 import {vs, hs, ms} from '../../utils/scaling';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
+import UserApi from '../../api/user.api';
+import User from '../../models/user.model';
+import Store from '../../utils/asyncStore';
+import Route from '../../utils/route';
 
 interface Props {}
 interface FormInfo {
@@ -16,6 +20,7 @@ interface FormInfo {
 }
 
 const RegisterScreen = () => {
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   const [isShowPwd, setIsShowPwd] = useState<boolean>(true);
   const [isShowConfirmPwd, setIsShowConfirmPwd] = useState<boolean>(true);
   const [info, setInfo] = useState<FormInfo>({
@@ -46,7 +51,34 @@ const RegisterScreen = () => {
 
   const onBack = () => navigator.goBack();
 
-  const onRegister = () => console.log(info);
+  const onRegister = async () => {
+    if (info.password === info.confirmPassword) {
+      setIsLoading(true);
+      const res = await UserApi.register(
+        new User({
+          firstName: info.firstName,
+          lastName: info.lastName,
+          email: info.email,
+          password: info.password,
+          avatar:
+            'https://i.pinimg.com/736x/4d/8e/cc/4d8ecc6967b4a3d475be5c4d881c4d9c.jpg',
+        }),
+      );
+      const user = new User({
+        id: res.data._id,
+        firstName: res.data.firstName,
+        lastName: res.data.lastName,
+        email: res.data.email,
+        password: res.data.password,
+        phone: res.data.phone,
+        token: res.data.token,
+        avatar: res.data.avatar,
+      });
+      await Store.saveUserData(user);
+      navigator.navigate(Route.HomeScreen);
+    }
+    setIsLoading(false);
+  };
 
   return (
     <KeyboardAwareScrollView>
@@ -100,6 +132,8 @@ const RegisterScreen = () => {
               <Icon
                 type="font-awesome"
                 name={isShowPwd ? 'eye-slash' : 'eye'}
+                size={ms(18)}
+                color="#5D5D5D"
                 onPress={showPwd}
               />
             }
@@ -116,6 +150,8 @@ const RegisterScreen = () => {
               <Icon
                 type="font-awesome"
                 name={isShowConfirmPwd ? 'eye-slash' : 'eye'}
+                size={ms(18)}
+                color="#5D5D5D"
                 onPress={showConfirmPwd}
               />
             }
@@ -124,7 +160,7 @@ const RegisterScreen = () => {
           <Button
             style={{marginTop: vs(20)}}
             tittle="Register"
-            isLoading={false}
+            isLoading={isLoading}
             onPress={onRegister}
           />
         </View>

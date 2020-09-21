@@ -10,7 +10,7 @@ import {
 import {useNavigation, useTheme} from '@react-navigation/native';
 import Route from '../../utils/route';
 import {StoreProviderInterface, GlobalContext} from '../../utils/storeProvider';
-import MessageApi from '../../api/message';
+import MessageApi from '../../api/message.api';
 import {vs, hs, ms} from '../../utils/scaling';
 import {Icon} from 'react-native-elements';
 import UserCard from '../../components/UserCard';
