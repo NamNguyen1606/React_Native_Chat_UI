@@ -20,7 +20,7 @@ const CloneData: [] = [
 
 const ChatRoomScreen = () => {
   const {socket} = useContext<StoreProviderInterface>(GlobalContext);
-  const [messages, setMessages] = useState<any>(CloneData);
+  const [messages, setMessages] = useState<any[]>([]);
   const navigator = useNavigation();
   const isActive = true;
   const {colors} = useTheme();
@@ -69,12 +69,17 @@ const ChatRoomScreen = () => {
   const onBack = () => navigator.goBack();
 
   const getMessageData = async () => {
-    const res = await MessageApi.getMessages();
+    const res = await MessageApi.getMessagesById('160616');
     return res;
   };
 
-  const onSentMessage = () => {
-    socket?.data.emit(SocketName.Send, message);
+  const onSentMessage = async () => {
+    await MessageApi.sendMessage(
+      '160616',
+      '5f697700fea07537c0425671',
+      message,
+      false,
+    );
     setMessage('');
     Keyboard.dismiss();
   };
@@ -89,7 +94,7 @@ const ChatRoomScreen = () => {
     <ChatBubble
       style={{marginVertical: hs(5)}}
       name="Nam Nguyen"
-      isUser={item.isUser}
+      isUser={true}
       timestamp="10:20 AM"
       message={`${item.message}`}
       img="https://i.pinimg.com/736x/4d/8e/cc/4d8ecc6967b4a3d475be5c4d881c4d9c.jpg"
@@ -100,18 +105,21 @@ const ChatRoomScreen = () => {
   const renderFooter = () => <View style={style.footerWhiteSpace} />;
 
   //LIFE-CYCLE
-  // useEffect(() => {
-  //   const getMsgData = async () => {
-  //     const res = await getMessageData();
-  //     console.log(res);
-  //     setMessages(res);
-  //   };
-  //   getMsgData();
-  // }, []);
+  useEffect(() => {
+    const getMsgData = async () => {
+      const res = await getMessageData();
+      setMessages(res.data);
+    };
+    getMsgData();
+  }, []);
 
-  // useEffect(() => {
-  //   socket!.data.on(SocketName.Messages, (data: any) => setMessages(data));
-  // }, [socket]);
+  useEffect(() => {
+    socket!.data.on(SocketName.Messages, (data: any) => {
+      const newData = [...messages, data];
+      console.log(newData);
+      setMessages(newData);
+    });
+  }, [socket]);
 
   return (
     <View style={style.container}>

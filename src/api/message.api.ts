@@ -1,10 +1,20 @@
 import AxiosClient from './axiosClient';
 export default class MessageApi {
-  static getMessages = () => {
-    return AxiosClient.get('messages');
+  static getMessagesById = (roomId: string) => {
+    return AxiosClient.post('messages/data', {roomId: roomId});
   };
 
-  static postMessage = async (message: string) => {
-    return AxiosClient.post('messages', {msg: message});
+  static sendMessage = async (
+    roomId: string,
+    senderId: string,
+    message: string,
+    isRead: boolean,
+  ) => {
+    return AxiosClient.post('messages', {
+      roomId: roomId,
+      senderId: senderId,
+      message: message,
+      isRead: isRead,
+    });
   };
 }

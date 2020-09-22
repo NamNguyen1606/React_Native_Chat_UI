@@ -16,30 +16,52 @@ import {Icon} from 'react-native-elements';
 import UserCard from '../../components/UserCard';
 import {ThemeContext} from '../../../App';
 import {Color} from '../../utils/theme';
+import Store from '../../utils/asyncStore';
+import RoomApi from '../../api/roomApi';
+import SocketName from '../../utils/socketNamespace';
+
+let userData;
 
 const RoomsScreen = () => {
+  let [userAvatar, setUserAvatar] = useState<string>(
+    'https://www.vippng.com/png/detail/416-4161690_empty-profile-picture-blank-avatar-image-circle.png',
+  );
   const {id, socket} = useContext<StoreProviderInterface>(GlobalContext);
-  const [userId, setUserId] = useState<string>();
+  const [userId, setUserId] = useState<any>();
   const [userActiveList, setUserActiveList] = useState<[]>([]);
   const handleUserId = (value: string) => setUserId(value);
 
   const navigator = useNavigation();
   const {isDarkMode, setIsDarkMode} = useContext(ThemeContext);
   const {colors} = useTheme();
+
+  //FUNCTION
+  const onUserCardPress = async () => {
+    socket?.data.emit(SocketName.Join, '160616');
+    const res = await RoomApi.getRoom('16', '06', false);
+    console.log(res);
+    navigator.navigate(Route.ChatScreen);
+  };
+
   // useEffect(() => {
-  //   const res = async () => {
-  //     const res = await MessageApi.getMessages();
-  //     setUserActiveList(res);
+  //   const getUserData = async () => {
+  //     userData = await Store.getUserData();
+  //     setUserAvatar(userData._avatar);
   //   };
-  //   res();
+  //   // const res = async () => {
+  //   //   const res = await MessageApi.getMessages();
+  //   //   setUserActiveList(res);
+  //   // };
+  //   // res();
+  //   getUserData();
   // }, []);
 
   // useEffect(() => {
-  //   socket!.data.on('messages', (data) => {
+  //   socket!.data.on('message', (data: any) => {
   //     console.log(data);
-  //     setUserActiveList(data);
+  //     setUserId(data);
   //   });
-  // }, [socket]);x`
+  // }, [socket]);
   const isActive = true;
   return (
     <View style={{...style.container, backgroundColor: colors.background}}>
@@ -62,8 +84,7 @@ const RoomsScreen = () => {
           <Image
             style={style.img}
             source={{
-              uri:
-                'https://i.pinimg.com/736x/4d/8e/cc/4d8ecc6967b4a3d475be5c4d881c4d9c.jpg',
+              uri: userAvatar,
             }}
           />
           <View
@@ -98,7 +119,7 @@ const RoomsScreen = () => {
           lastTimeActive="1h ago"
           isOnline={true}
           img="https://i.pinimg.com/originals/31/a0/d5/31a0d596f1e215b5825333f419645dcb.jpg"
-          onPress={() => navigator.navigate(Route.ChatScreen)}
+          onPress={onUserCardPress}
         />
         <UserCard
           name="Dianna Smiley"

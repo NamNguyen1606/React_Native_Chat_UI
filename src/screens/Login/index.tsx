@@ -48,8 +48,6 @@ const LoginScreen = () => {
         avatar: res.data.avatar,
       });
       await Store.saveUserData(user);
-      const data = await Store.getUserData();
-      console.log(data);
       navigator.navigate(Route.HomeScreen);
     } else {
       console.log(res.message);

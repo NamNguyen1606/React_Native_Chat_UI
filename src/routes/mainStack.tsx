@@ -11,7 +11,7 @@ const Stack = createStackNavigator();
 const MainStack = () => {
   return (
     <Stack.Navigator initialRouteName={Route.LoginScreen}>
-      <Stack.Screen
+      {/* <Stack.Screen
         name={Route.RegisterScreen}
         component={RegisterScreen}
         options={{headerShown: false}}
@@ -20,7 +20,7 @@ const MainStack = () => {
         name={Route.LoginScreen}
         component={LoginScreen}
         options={{headerShown: false}}
-      />
+      /> */}
       <Stack.Screen
         name={Route.HomeScreen}
         component={CreateBottomTab}
