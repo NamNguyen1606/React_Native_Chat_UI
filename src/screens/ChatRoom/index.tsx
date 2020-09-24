@@ -10,21 +10,25 @@ import {style} from './style';
 import MessageApi from '../../api/message.api';
 import {FlatList} from 'react-native-gesture-handler';
 import SocketName from '../../utils/socketNamespace';
-interface Props {}
+interface Props {
+  route: any;
+}
 
-const CloneData: [] = [
-  {id: 1, message: 'Hello', isUser: true},
-  {id: 2, message: 'Hello', isUser: false},
-  {id: 3, message: 'Hello', isUser: true},
-];
-
-const ChatRoomScreen = () => {
+const ChatRoomScreen: React.FC<Props> = ({route}) => {
   const {socket} = useContext<StoreProviderInterface>(GlobalContext);
   const [messages, setMessages] = useState<any[]>([]);
   const navigator = useNavigation();
   const isActive = true;
   const {colors} = useTheme();
+  const {roomId} = route.params;
+  const {userId} = route.params;
+  console.log(userId);
   // FUNCTION
+  const dataFormat = (date: string) => {
+    let result = new Date(date);
+    return result.getHours() + ':' + result.getMinutes();
+  };
+
   const [message, setMessage] = useState<string>('');
 
   const handleMessage = (value: string) => setMessage(value);
@@ -69,19 +73,14 @@ const ChatRoomScreen = () => {
   const onBack = () => navigator.goBack();
 
   const getMessageData = async () => {
-    const res = await MessageApi.getMessagesById('160616');
+    const res = await MessageApi.getMessagesById(roomId);
     return res;
   };
 
   const onSentMessage = async () => {
-    await MessageApi.sendMessage(
-      '160616',
-      '5f697700fea07537c0425671',
-      message,
-      false,
-    );
-    setMessage('');
     Keyboard.dismiss();
+    setMessage('');
+    await MessageApi.sendMessage(roomId, userId, message, false);
   };
 
   const getStatusStateUI = () => {
@@ -93,11 +92,11 @@ const ChatRoomScreen = () => {
   const renderMsg = ({item}: any) => (
     <ChatBubble
       style={{marginVertical: hs(5)}}
-      name="Nam Nguyen"
-      isUser={true}
-      timestamp="10:20 AM"
-      message={`${item.message}`}
-      img="https://i.pinimg.com/736x/4d/8e/cc/4d8ecc6967b4a3d475be5c4d881c4d9c.jpg"
+      name={item.fullName}
+      isUser={userId.toString() === item.message.senderId}
+      timestamp={dataFormat(item.message.createdAt)}
+      message={`${item.message.message}`}
+      img={item.avatar}
     />
   );
 
@@ -108,18 +107,19 @@ const ChatRoomScreen = () => {
   useEffect(() => {
     const getMsgData = async () => {
       const res = await getMessageData();
-      setMessages(res.data);
+      setMessages(res.data.reverse());
     };
+    // socket?.data.emit(SocketName.Join, '160616');
     getMsgData();
+
+    console.log('LOADING DATA');
   }, []);
 
   useEffect(() => {
     socket!.data.on(SocketName.Messages, (data: any) => {
-      const newData = [...messages, data];
-      console.log(newData);
-      setMessages(newData);
+      setMessages([data, ...messages]);
     });
-  }, [socket]);
+  });
 
   return (
     <View style={style.container}>
@@ -163,10 +163,11 @@ const ChatRoomScreen = () => {
       {/* MIDDLE */}
       <View style={style.middle}>
         <FlatList
+          inverted={true}
           style={style.flatList}
           data={messages}
           renderItem={renderMsg}
-          keyExtractor={(item: any) => item._id}
+          keyExtractor={(item: any) => item.message._id}
           ListHeaderComponent={renderHeader}
           ListFooterComponent={renderFooter}
         />

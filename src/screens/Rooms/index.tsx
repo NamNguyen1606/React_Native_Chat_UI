@@ -12,20 +12,28 @@ import Route from '../../utils/route';
 import {StoreProviderInterface, GlobalContext} from '../../utils/storeProvider';
 import MessageApi from '../../api/message.api';
 import {vs, hs, ms} from '../../utils/scaling';
-import {Icon} from 'react-native-elements';
+import {Icon, Input} from 'react-native-elements';
 import UserCard from '../../components/UserCard';
 import {ThemeContext} from '../../../App';
 import {Color} from '../../utils/theme';
 import Store from '../../utils/asyncStore';
 import RoomApi from '../../api/roomApi';
 import SocketName from '../../utils/socketNamespace';
+import {Dimensions} from 'react-native';
+import ContactApi from '../../api/contactApi';
+import {FlatList} from 'react-native-gesture-handler';
+import User from '../../models/user.model';
 
 let userData;
-
+const TOKEN =
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI1ZjZiMDY5OWY2YTMxZjM3MzRmNGZiMWUiLCJleHAiOjE2MDM0NDE1NjEsImlhdCI6MTYwMDg0OTU2MX0.VXqHjAAkjXA3_U62dFcwOriwCcp8_kbc9rpcc6Mq4-o';
 const RoomsScreen = () => {
   let [userAvatar, setUserAvatar] = useState<string>(
     'https://www.vippng.com/png/detail/416-4161690_empty-profile-picture-blank-avatar-image-circle.png',
   );
+
+  const [searchKey, setSearchKey] = useState<String>('');
+  const [rooms, setRooms] = useState<any[]>([]);
   const {id, socket} = useContext<StoreProviderInterface>(GlobalContext);
   const [userId, setUserId] = useState<any>();
   const [userActiveList, setUserActiveList] = useState<[]>([]);
@@ -34,37 +42,60 @@ const RoomsScreen = () => {
   const navigator = useNavigation();
   const {isDarkMode, setIsDarkMode} = useContext(ThemeContext);
   const {colors} = useTheme();
+  let userInfo: any;
 
   //FUNCTION
-  const onUserCardPress = async () => {
-    socket?.data.emit(SocketName.Join, '160616');
-    const res = await RoomApi.getRoom('16', '06', false);
-    console.log(res);
-    navigator.navigate(Route.ChatScreen);
+  const onUserCardPress = async (roomId: string) => {
+    // socket?.data.emit(SocketName.Join, roomId);
+    // navigator.navigate(Route.ChatScreen);
+    navigator.navigate(Route.ChatScreen, {
+      roomId: roomId,
+      // userId: userInfo._id,
+      userId: '5f6b06b1f6a31f3734f4fb20',
+    });
   };
 
-  // useEffect(() => {
-  //   const getUserData = async () => {
-  //     userData = await Store.getUserData();
-  //     setUserAvatar(userData._avatar);
-  //   };
-  //   // const res = async () => {
-  //   //   const res = await MessageApi.getMessages();
-  //   //   setUserActiveList(res);
-  //   // };
-  //   // res();
-  //   getUserData();
-  // }, []);
+  // const onSearch = async (value: string) => {
+  //   setSearchKey(value);
+  //   const res = await ContactApi.getRooms(value);
+  //   console.log(res);
+  //   setRooms(res.data);
+  // };
 
-  // useEffect(() => {
-  //   socket!.data.on('message', (data: any) => {
-  //     console.log(data);
-  //     setUserId(data);
-  //   });
-  // }, [socket]);
+  useEffect(() => {
+    const getUserInfo = async () => {
+      userInfo = await Store.getUserData();
+      console.log(userInfo);
+      setUserAvatar(userInfo._avatar);
+      getRooms(userInfo._token);
+    };
+
+    const getRooms = async (token: string) => {
+      try {
+        const res = await ContactApi.getRooms(token);
+        setRooms(res.data);
+      } catch (err) {
+        console.log(err);
+      }
+    };
+    getUserInfo();
+  }, []);
+
+  // FLATLIST
+  const renderRooms = ({item}: any) => (
+    <UserCard
+      name="Arden Dan"
+      lastMsg={item.room.newMessage}
+      lastTimeActive="1h ago"
+      isOnline={true}
+      img={item.avatar}
+      onPress={() => onUserCardPress(item.room.roomId)}
+    />
+  );
   const isActive = true;
   return (
     <View style={{...style.container, backgroundColor: colors.background}}>
+      {/* HEADER */}
       <View
         style={{
           ...style.header,
@@ -112,22 +143,25 @@ const RoomsScreen = () => {
           />
         </View>
       </View>
+      {/* MIDDLE */}
       <View style={style.middle}>
-        <UserCard
-          name="Arden Dan"
-          lastMsg="Hi, bro"
-          lastTimeActive="1h ago"
-          isOnline={true}
-          img="https://i.pinimg.com/originals/31/a0/d5/31a0d596f1e215b5825333f419645dcb.jpg"
-          onPress={onUserCardPress}
-        />
-        <UserCard
-          name="Dianna Smiley"
-          lastMsg="Hey! What's up"
-          lastTimeActive="3m ago"
-          isOnline={false}
-          img="https://i.pinimg.com/736x/4d/8e/cc/4d8ecc6967b4a3d475be5c4d881c4d9c.jpg"
-          onPress={() => navigator.navigate(Route.ChatScreen)}
+        <TouchableOpacity
+          style={style.groupBtn}
+          activeOpacity={0.5}
+          onPress={() => {
+            console.log('CLICK NE');
+          }}>
+          <Icon
+            name="account-plus-outline"
+            type="material-community"
+            size={hs(25)}
+            color={'white'}
+          />
+        </TouchableOpacity>
+        <FlatList
+          data={rooms}
+          renderItem={renderRooms}
+          keyExtractor={(item: any, index) => item.room._id}
         />
       </View>
     </View>
@@ -175,6 +209,18 @@ const style = StyleSheet.create({
   img: {
     flex: 1,
     borderRadius: vs(25),
+  },
+  groupBtn: {
+    height: hs(50),
+    width: hs(50),
+    backgroundColor: '#049FE3',
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: hs(25),
+    position: 'absolute',
+    zIndex: 1,
+    left: hs(295),
+    top: Dimensions.get('window').height - ms(210),
   },
 });
 

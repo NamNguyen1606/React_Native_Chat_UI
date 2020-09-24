@@ -17,4 +17,9 @@ export default class MessageApi {
       isRead: isRead,
     });
   };
+
+  static search = (searchKey: string) => {
+    const url = 'messages/search';
+    return AxiosClient.post(url, {searchKey: searchKey});
+  };
 }
