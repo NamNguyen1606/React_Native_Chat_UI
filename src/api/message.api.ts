@@ -4,7 +4,7 @@ export default class MessageApi {
     return AxiosClient.post(
       'messages/data',
       {roomId: roomId},
-      {headers: {limit: 10, page: page}},
+      {headers: {limit: 5, page: page}},
     );
   };
 

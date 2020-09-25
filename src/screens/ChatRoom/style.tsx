@@ -47,7 +47,7 @@ export const style = StyleSheet.create({
     borderTopColor: '#C7C7C7',
   },
   footerWhiteSpace: {
-    height: vs(20),
+    height: vs(10),
   },
   headerWhiteSpace: {
     height: vs(10),
