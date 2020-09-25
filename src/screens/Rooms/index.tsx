@@ -23,8 +23,6 @@ import {Dimensions} from 'react-native';
 import ContactApi from '../../api/contactApi';
 import {FlatList} from 'react-native-gesture-handler';
 import User from '../../models/user.model';
-
-let userData;
 const TOKEN =
   'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI1ZjZiMDY5OWY2YTMxZjM3MzRmNGZiMWUiLCJleHAiOjE2MDM0NDE1NjEsImlhdCI6MTYwMDg0OTU2MX0.VXqHjAAkjXA3_U62dFcwOriwCcp8_kbc9rpcc6Mq4-o';
 const RoomsScreen = () => {
@@ -35,23 +33,19 @@ const RoomsScreen = () => {
   const [searchKey, setSearchKey] = useState<String>('');
   const [rooms, setRooms] = useState<any[]>([]);
   const {id, socket} = useContext<StoreProviderInterface>(GlobalContext);
-  const [userId, setUserId] = useState<any>();
+  const [userInfo, setUserInfo] = useState<any>();
   const [userActiveList, setUserActiveList] = useState<[]>([]);
-  const handleUserId = (value: string) => setUserId(value);
 
   const navigator = useNavigation();
   const {isDarkMode, setIsDarkMode} = useContext(ThemeContext);
   const {colors} = useTheme();
-  let userInfo: any;
 
   //FUNCTION
   const onUserCardPress = async (roomId: string) => {
-    // socket?.data.emit(SocketName.Join, roomId);
-    // navigator.navigate(Route.ChatScreen);
+    socket!.data.emit(SocketName.Join, roomId);
     navigator.navigate(Route.ChatScreen, {
       roomId: roomId,
-      // userId: userInfo._id,
-      userId: '5f6b06b1f6a31f3734f4fb20',
+      userId: userInfo._id,
     });
   };
 
@@ -64,10 +58,10 @@ const RoomsScreen = () => {
 
   useEffect(() => {
     const getUserInfo = async () => {
-      userInfo = await Store.getUserData();
-      console.log(userInfo);
-      setUserAvatar(userInfo._avatar);
-      getRooms(userInfo._token);
+      const user = await Store.getUserData();
+      setUserInfo(user);
+      setUserAvatar(user._avatar);
+      getRooms(user._token);
     };
 
     const getRooms = async (token: string) => {
@@ -84,12 +78,12 @@ const RoomsScreen = () => {
   // FLATLIST
   const renderRooms = ({item}: any) => (
     <UserCard
-      name="Arden Dan"
-      lastMsg={item.room.newMessage}
+      name={item.roomInfo.fullName}
+      lastMsg={item.roomData.newMessage}
       lastTimeActive="1h ago"
       isOnline={true}
-      img={item.avatar}
-      onPress={() => onUserCardPress(item.room.roomId)}
+      img={item.roomInfo.avatar}
+      onPress={() => onUserCardPress(item.roomData.roomId)}
     />
   );
   const isActive = true;
@@ -161,7 +155,7 @@ const RoomsScreen = () => {
         <FlatList
           data={rooms}
           renderItem={renderRooms}
-          keyExtractor={(item: any, index) => item.room._id}
+          keyExtractor={(item: any, index) => item.roomData._id}
         />
       </View>
     </View>

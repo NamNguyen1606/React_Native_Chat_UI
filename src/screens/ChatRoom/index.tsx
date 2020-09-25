@@ -1,4 +1,4 @@
-import React, {useContext} from 'react';
+import React, {useCallback, useContext} from 'react';
 import {useEffect, useState} from 'react';
 import {View, Text, TouchableOpacity, TextInput, Keyboard} from 'react-native';
 import {GlobalContext, StoreProviderInterface} from '../../utils/storeProvider';
@@ -13,7 +13,6 @@ import SocketName from '../../utils/socketNamespace';
 interface Props {
   route: any;
 }
-
 const ChatRoomScreen: React.FC<Props> = ({route}) => {
   const {socket} = useContext<StoreProviderInterface>(GlobalContext);
   const [messages, setMessages] = useState<any[]>([]);
@@ -22,7 +21,7 @@ const ChatRoomScreen: React.FC<Props> = ({route}) => {
   const {colors} = useTheme();
   const {roomId} = route.params;
   const {userId} = route.params;
-  console.log(userId);
+  const [page, setPage] = useState<number>(1);
   // FUNCTION
   const dataFormat = (date: string) => {
     let result = new Date(date);
@@ -73,7 +72,7 @@ const ChatRoomScreen: React.FC<Props> = ({route}) => {
   const onBack = () => navigator.goBack();
 
   const getMessageData = async () => {
-    const res = await MessageApi.getMessagesById(roomId);
+    const res = await MessageApi.getMessagesById(roomId, page);
     return res;
   };
 
@@ -102,24 +101,27 @@ const ChatRoomScreen: React.FC<Props> = ({route}) => {
 
   const renderHeader = () => <View style={style.headerWhiteSpace} />;
   const renderFooter = () => <View style={style.footerWhiteSpace} />;
-
+  const updateMessage = useCallback(
+    (msg: any) => {
+      setMessages([msg, ...messages]);
+    },
+    [messages],
+  );
   //LIFE-CYCLE
   useEffect(() => {
     const getMsgData = async () => {
       const res = await getMessageData();
-      setMessages(res.data.reverse());
+      setMessages(res.data);
     };
     // socket?.data.emit(SocketName.Join, '160616');
     getMsgData();
-
-    console.log('LOADING DATA');
+    console.log('Loading');
   }, []);
 
   useEffect(() => {
-    socket!.data.on(SocketName.Messages, (data: any) => {
-      setMessages([data, ...messages]);
-    });
-  });
+    console.log('EMIT');
+    socket!.data.on(SocketName.Messages, (data: any) => updateMessage(data));
+  }, [socket, updateMessage]);
 
   return (
     <View style={style.container}>

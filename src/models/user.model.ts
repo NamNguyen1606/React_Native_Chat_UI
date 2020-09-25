@@ -1,7 +1,6 @@
 interface IUser {
   id?: string;
-  firstName: string;
-  lastName: string;
+  fullName: string;
   email: string;
   password: string;
   avatar: string;
@@ -18,8 +17,7 @@ interface IUser {
 // token: string,
 class User {
   private _id: string;
-  private _firstName: string;
-  private _lastName: string;
+  private _fullName: string;
   private _email: string;
   private _password: string;
   private _avatar: string;
@@ -29,8 +27,7 @@ class User {
 
   constructor({
     id = '',
-    firstName = '',
-    lastName = '',
+    fullName = '',
     email = '',
     avatar = '',
     password = '',
@@ -39,8 +36,7 @@ class User {
     phone = '',
   }: IUser) {
     this._id = id;
-    this._firstName = firstName;
-    this._lastName = lastName;
+    this._fullName = fullName;
     this._email = email;
     this._password = password;
     this._avatar = avatar;
@@ -56,18 +52,11 @@ class User {
     this._id = value;
   }
 
-  get firstName(): string {
-    return this._firstName;
+  get fullName(): string {
+    return this._fullName;
   }
-  set firstName(value: string) {
-    this._firstName = value;
-  }
-
-  get lastName(): string {
-    return this._lastName;
-  }
-  set lastName(value: string) {
-    this._lastName = value;
+  set fullName(value: string) {
+    this._fullName = value;
   }
 
   get email(): string {

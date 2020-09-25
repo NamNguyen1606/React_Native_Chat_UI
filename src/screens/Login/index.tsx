@@ -39,8 +39,7 @@ const LoginScreen = () => {
     if (res.success) {
       const user = new User({
         id: res.data._id,
-        firstName: res.data.firstName,
-        lastName: res.data.lastName,
+        fullName: res.data.fullName,
         email: res.data.email,
         password: res.data.password,
         phone: res.data.phone,

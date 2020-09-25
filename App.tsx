@@ -1,8 +1,8 @@
 import React, {useState, useMemo} from 'react';
 import MainStack from './src/routes/mainStack';
 import {NavigationContainer} from '@react-navigation/native';
-import StoreProvider from './src/utils/storeProvider';
 import {MyDefaultTheme, MyDarkTheme} from './src/utils/theme';
+import StoreProvider from './src/utils/storeProvider';
 
 interface ThemeData {
   isDarkMode: boolean;

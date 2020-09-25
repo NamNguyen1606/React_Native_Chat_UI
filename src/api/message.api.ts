@@ -1,7 +1,11 @@
 import AxiosClient from './axiosClient';
 export default class MessageApi {
-  static getMessagesById = (roomId: string) => {
-    return AxiosClient.post('messages/data', {roomId: roomId});
+  static getMessagesById = (roomId: string, page: number) => {
+    return AxiosClient.post(
+      'messages/data',
+      {roomId: roomId},
+      {headers: {limit: 10, page: page}},
+    );
   };
 
   static sendMessage = async (
