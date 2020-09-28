@@ -1,14 +1,5 @@
-import React, {useCallback, useContext} from 'react';
-import {useEffect, useState} from 'react';
-import {
-  View,
-  Text,
-  TouchableOpacity,
-  TextInput,
-  Keyboard,
-  ActivityIndicator,
-} from 'react-native';
-import {GlobalContext, StoreProviderInterface} from '../../utils/storeProvider';
+import React, {useEffect, useState} from 'react';
+import {View, Text, TouchableOpacity, TextInput, Keyboard} from 'react-native';
 import {vs, hs} from '../../utils/scaling';
 import {useNavigation, useTheme} from '@react-navigation/native';
 import {Icon} from 'react-native-elements';
@@ -18,11 +9,15 @@ import MessageApi from '../../api/message.api';
 import {FlatList} from 'react-native-gesture-handler';
 import SocketName from '../../utils/socketNamespace';
 import {usePaginatedQuery} from 'react-query';
+import io from 'socket.io-client';
+
+const SOCKET = io('http://192.168.1.83:5035');
 interface Props {
   route: any;
 }
 const ChatRoomScreen: React.FC<Props> = ({route}) => {
-  const {socket} = useContext<StoreProviderInterface>(GlobalContext);
+  // const {socket} = useContext<StoreProviderInterface>(GlobalContext);
+  const [socketData, setSocketData] = useState<any>();
   const [messages, setMessages] = useState<any>([]);
   const navigator = useNavigation();
   const isActive = true;
@@ -84,8 +79,11 @@ const ChatRoomScreen: React.FC<Props> = ({route}) => {
     MessageApi.getMessagesById(roomId, pageIndex);
 
   const {isLoading, resolvedData} = usePaginatedQuery(
-    ['message', page],
+    [roomId, page],
     getMessageData,
+    {
+      cacheTime: 0,
+    },
   );
 
   const onSentMessage = async () => {
@@ -99,7 +97,7 @@ const ChatRoomScreen: React.FC<Props> = ({route}) => {
       ? {backgroundColor: '#4ADC61'}
       : {backgroundColor: '#D0D0D0'};
   };
-  // FlatList
+  // FLAT LIST
   const renderMsg = ({item}: any) => (
     <ChatBubble
       style={{marginVertical: hs(5)}}
@@ -112,27 +110,33 @@ const ChatRoomScreen: React.FC<Props> = ({route}) => {
   );
 
   const loadMore = () => {
-    console.log(resolvedData);
     !resolvedData || setPage(page + 1);
   };
 
+  const renderKey = (item: any) => item.message._id;
   const renderHeader = () => <View style={style.headerWhiteSpace} />;
   const renderFooter = () => <View style={style.footerWhiteSpace} />;
-  const updateMessage = useCallback(
-    (msg: any) => {
-      setMessages([msg, ...messages]);
-    },
-    [messages],
-  );
-  //LIFE-CYCLE
+
+  //SIDE-EFFECT
+  useEffect(() => {
+    SOCKET.emit(SocketName.Join, roomId);
+  }, [roomId]);
+
   useEffect(() => {
     isLoading || setMessages([...messages, ...resolvedData?.data]);
   }, [isLoading, resolvedData]);
 
   useEffect(() => {
-    console.log('EMIT');
-    socket!.data.on(SocketName.Messages, (data: any) => updateMessage(data));
-  }, [socket, updateMessage]);
+    SOCKET.on(SocketName.Messages, (data: any) => {
+      setSocketData(data);
+    });
+  }, []);
+
+  useEffect(() => {
+    if (socketData) {
+      setMessages([socketData, ...messages]);
+    }
+  }, [socketData]);
 
   return (
     <View style={style.container}>
@@ -181,7 +185,7 @@ const ChatRoomScreen: React.FC<Props> = ({route}) => {
             style={style.flatList}
             data={messages}
             renderItem={renderMsg}
-            keyExtractor={(item: any) => item.message._id}
+            keyExtractor={renderKey}
             ListHeaderComponent={renderHeader}
             ListFooterComponent={renderFooter}
             onEndReachedThreshold={0.1}

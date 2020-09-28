@@ -9,7 +9,6 @@ import {
 } from 'react-native';
 import {useNavigation, useTheme} from '@react-navigation/native';
 import Route from '../../utils/route';
-import {StoreProviderInterface, GlobalContext} from '../../utils/storeProvider';
 import MessageApi from '../../api/message.api';
 import {vs, hs, ms} from '../../utils/scaling';
 import {Icon, Input} from 'react-native-elements';
@@ -23,8 +22,7 @@ import {Dimensions} from 'react-native';
 import ContactApi from '../../api/contactApi';
 import {FlatList} from 'react-native-gesture-handler';
 import User from '../../models/user.model';
-const TOKEN =
-  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI1ZjZiMDY5OWY2YTMxZjM3MzRmNGZiMWUiLCJleHAiOjE2MDM0NDE1NjEsImlhdCI6MTYwMDg0OTU2MX0.VXqHjAAkjXA3_U62dFcwOriwCcp8_kbc9rpcc6Mq4-o';
+
 const RoomsScreen = () => {
   let [userAvatar, setUserAvatar] = useState<string>(
     'https://www.vippng.com/png/detail/416-4161690_empty-profile-picture-blank-avatar-image-circle.png',
@@ -32,7 +30,6 @@ const RoomsScreen = () => {
 
   const [searchKey, setSearchKey] = useState<String>('');
   const [rooms, setRooms] = useState<any[]>([]);
-  const {id, socket} = useContext<StoreProviderInterface>(GlobalContext);
   const [userInfo, setUserInfo] = useState<any>();
   const [userActiveList, setUserActiveList] = useState<[]>([]);
 
@@ -42,7 +39,6 @@ const RoomsScreen = () => {
 
   //FUNCTION
   const onUserCardPress = async (roomId: string) => {
-    socket!.data.emit(SocketName.Join, roomId);
     navigator.navigate(Route.ChatScreen, {
       roomId: roomId,
       userId: userInfo._id,
