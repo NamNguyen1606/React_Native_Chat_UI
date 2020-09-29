@@ -4,4 +4,6 @@ export default class Route {
   static RegisterScreen = 'registerScreen';
   static HomeScreen = 'homeScreen';
   static ChatScreen = 'chatScreen';
+  static AddingGroup = 'addingScreen';
+  static CreatingGroup = 'creatingScreen';
 }

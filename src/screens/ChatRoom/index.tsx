@@ -11,12 +11,11 @@ import SocketName from '../../utils/socketNamespace';
 import {usePaginatedQuery} from 'react-query';
 import io from 'socket.io-client';
 
-const SOCKET = io('http://192.168.1.83:5035');
+const SOCKET = io('https://pscchattest.azurewebsites.net');
 interface Props {
   route: any;
 }
 const ChatRoomScreen: React.FC<Props> = ({route}) => {
-  // const {socket} = useContext<StoreProviderInterface>(GlobalContext);
   const [socketData, setSocketData] = useState<any>();
   const [messages, setMessages] = useState<any>([]);
   const navigator = useNavigation();

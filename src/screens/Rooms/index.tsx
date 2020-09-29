@@ -11,7 +11,7 @@ import {useNavigation, useTheme} from '@react-navigation/native';
 import Route from '../../utils/route';
 import MessageApi from '../../api/message.api';
 import {vs, hs, ms} from '../../utils/scaling';
-import {Icon, Input} from 'react-native-elements';
+import {Icon, Overlay} from 'react-native-elements';
 import UserCard from '../../components/UserCard';
 import {ThemeContext} from '../../../App';
 import {Color} from '../../utils/theme';
@@ -22,12 +22,12 @@ import {Dimensions} from 'react-native';
 import ContactApi from '../../api/contactApi';
 import {FlatList} from 'react-native-gesture-handler';
 import User from '../../models/user.model';
+import {CreatingGroupScreen} from '..';
 
 const RoomsScreen = () => {
   let [userAvatar, setUserAvatar] = useState<string>(
     'https://www.vippng.com/png/detail/416-4161690_empty-profile-picture-blank-avatar-image-circle.png',
   );
-
   const [searchKey, setSearchKey] = useState<String>('');
   const [rooms, setRooms] = useState<any[]>([]);
   const [userInfo, setUserInfo] = useState<any>();
@@ -45,6 +45,8 @@ const RoomsScreen = () => {
     });
   };
 
+  const onCreateGroup = () => navigator.navigate(Route.CreatingGroup);
+
   // const onSearch = async (value: string) => {
   //   setSearchKey(value);
   //   const res = await ContactApi.getRooms(value);
@@ -52,6 +54,7 @@ const RoomsScreen = () => {
   //   setRooms(res.data);
   // };
 
+  // SIDE EFFECT
   useEffect(() => {
     const getUserInfo = async () => {
       const user = await Store.getUserData();
@@ -138,9 +141,7 @@ const RoomsScreen = () => {
         <TouchableOpacity
           style={style.groupBtn}
           activeOpacity={0.5}
-          onPress={() => {
-            console.log('CLICK NE');
-          }}>
+          onPress={onCreateGroup}>
           <Icon
             name="account-plus-outline"
             type="material-community"
@@ -157,6 +158,7 @@ const RoomsScreen = () => {
     </View>
   );
 };
+
 const style = StyleSheet.create({
   container: {
     flex: 1,

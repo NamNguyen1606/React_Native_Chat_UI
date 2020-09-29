@@ -4,6 +4,8 @@ import ContactScreen from './Contacts';
 import SettingScreen from './Setting';
 import RegisterScreen from './Register';
 import LoginScreen from './Login/index';
+import CreatingGroupScreen from './CreatingGroup';
+import AddingUserGroupScreen from './AddingUserGroup';
 
 export {
   ChatRoomScreen,
@@ -12,4 +14,6 @@ export {
   SettingScreen,
   RegisterScreen,
   LoginScreen,
+  CreatingGroupScreen,
+  AddingUserGroupScreen,
 };
