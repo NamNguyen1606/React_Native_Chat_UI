@@ -1,54 +1,80 @@
 import {useTheme} from '@react-navigation/native';
 import React from 'react';
 import {View, StyleSheet, Image, Text, TouchableOpacity} from 'react-native';
+import {Icon} from 'react-native-elements';
 import {hs, ms, vs} from '../../utils/scaling';
 
+interface userInfo {
+  id: string;
+  img: string;
+  name: string;
+  email: string;
+}
 interface Props {
+  id: string;
   img: string;
   name: string;
   email: string;
   isOnline: boolean;
-  onPress?: () => void;
+  onPress: (data: userInfo) => void;
 }
 
 const UserInfoCard: React.FC<Props> = (props) => {
   const {colors} = useTheme();
   return (
-    <TouchableOpacity onPress={props.onPress}>
-      <View style={style.container}>
-        <View style={style.avatarContainer}>
-          <Image
-            style={style.img}
-            source={{
-              uri: props.img,
-            }}
-          />
-          <View
-            style={[
-              style.activePoint,
-              props.isOnline
-                ? {backgroundColor: '#4ADC61'}
-                : {backgroundColor: '#D0D0D0'},
-            ]}
-          />
+    <View style={style.container}>
+      <View style={style.avatarContainer}>
+        <Image
+          style={style.img}
+          source={{
+            uri: props.img,
+          }}
+        />
+        <View
+          style={[
+            style.activePoint,
+            props.isOnline
+              ? {backgroundColor: '#4ADC61'}
+              : {backgroundColor: '#D0D0D0'},
+          ]}
+        />
+      </View>
+      <View style={{...style.contentHolder, borderColor: colors.border}}>
+        <View style={style.messageHolder}>
+          <Text style={style.txtUsername}>{props.name}</Text>
+          <Text style={{...style.txtMessage, color: colors.text}}>
+            {props.email}
+          </Text>
         </View>
-        <View style={{...style.contentHolder, borderColor: colors.border}}>
-          <View style={style.messageHolder}>
-            <Text style={style.txtUsername}>{props.name}</Text>
-            <Text style={{...style.txtMessage, color: colors.text}}>
-              {props.email}
-            </Text>
-          </View>
-          <View style={style.lastTimeActive}></View>
+        <View style={style.Adding}>
+          <TouchableOpacity
+            onPress={() =>
+              props.onPress({
+                id: props.id,
+                email: props.email,
+                img: props.img,
+                name: props.name,
+              })
+            }>
+            <View style={style.btnDone}>
+              <Icon
+                name="account-plus-outline"
+                type="material-community"
+                size={hs(10)}
+                color={'white'}
+              />
+            </View>
+          </TouchableOpacity>
         </View>
       </View>
-    </TouchableOpacity>
+    </View>
   );
 };
 
 const style = StyleSheet.create({
   container: {
     height: hs(60),
+    width: '100%',
     flexDirection: 'row',
   },
   avatarContainer: {
@@ -59,6 +85,8 @@ const style = StyleSheet.create({
     flex: 1,
     margin: vs(8),
     borderRadius: vs(40),
+    borderColor: 'grey',
+    borderWidth: 0.4,
   },
   activePoint: {
     top: ms(40),
@@ -82,9 +110,10 @@ const style = StyleSheet.create({
     justifyContent: 'center',
     paddingLeft: hs(8),
   },
-  lastTimeActive: {
+  Adding: {
     height: '100%',
-    width: '100%',
+    justifyContent: 'center',
+    marginRight: hs(10),
   },
   txtUsername: {
     fontSize: ms(14),
@@ -100,8 +129,10 @@ const style = StyleSheet.create({
     alignItems: 'flex-end',
   },
   btnDone: {
+    width: hs(25),
+    height: hs(25),
     backgroundColor: '#2DCFEF',
-    borderRadius: hs(10),
+    borderRadius: hs(15),
     padding: hs(4),
     justifyContent: 'center',
     alignItems: 'center',

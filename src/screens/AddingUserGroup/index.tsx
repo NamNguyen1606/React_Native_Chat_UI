@@ -1,41 +1,102 @@
 import {useTheme, useNavigation} from '@react-navigation/native';
-import React from 'react';
+import React, {useState, useEffect, useCallback} from 'react';
 import {View, Text, FlatList, StyleSheet} from 'react-native';
 import {Icon, Input} from 'react-native-elements';
+import {TouchableOpacity} from 'react-native-gesture-handler';
+import ContactApi from '../../api/contactApi';
 import {UserCircleAvatar, UserInfoCard} from '../../components';
+import Store from '../../utils/asyncStore';
 import {hs, vs} from '../../utils/scaling';
+import UserApi from '../../api/user.api';
+
+let search = UserApi.createSearchRequest();
+const TOKEN =
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI1ZjcxYWNjNmJiMTVkMDVkYTgxNmM2ZDIiLCJleHAiOjE2MDM5NjE5ODQsImlhdCI6MTYwMTM2OTk4NH0.qMLMBW3LHJb-39EDZQCyDlMzeXB2nKsbM89JAvstPDQ';
 
 interface Props {}
-const DATA = [
-  {id: '1', name: 'Nam Nguyen'},
-  {id: '2', name: 'Nguyen Nguyen'},
-  {id: '3', name: 'Phuong Nam Tran'},
-  {id: '4', name: 'Nam Nguyen'},
-  {id: '5', name: 'Nam Nguyen'},
-  {id: '12', name: 'Nam Nguyen'},
-  {id: '311', name: 'Nam Nguyen'},
-  {id: '112', name: 'Nam Nguyen'},
-  {id: '1132', name: 'Nam Nguyen'},
-  {id: '14412', name: 'Nam Nguyen'},
-];
+// let userInfo: any;
+
 const AddingUserGroupScreen = () => {
   const {colors} = useTheme();
   const navigator = useNavigation();
+
+  const [users, setUsers] = useState<any[]>([]);
+  const [friends, setFriends] = useState<any[]>([]);
+  const [searchResults, setSearchResults] = useState<any[]>([]);
+  const [searchKey, setSearchKey] = useState<string>('');
   //FUNCTION
   const onBack = () => {
     navigator.goBack();
   };
+
+  const onSearch = useCallback(
+    async (value: string) => {
+      setSearchKey(value);
+      const res = await search(searchKey);
+      setSearchResults(res.data);
+    },
+    [searchKey],
+  );
+  // const onSearch = async (value: string) => {
+  //   setSearchKey(value);
+  //   const res = await UserApi.search(searchKey);
+  //   setFriends(res.data);
+  // };
+
+  const onAddUserToGroup = (userInfo: any) => {
+    const index = users.findIndex((user) => user.id === userInfo.id);
+    if (index === -1) {
+      setUsers([...users, userInfo]);
+    }
+  };
+
+  const onDeleteUser = (userId: string) => {
+    console.log(userId);
+    const result = users.filter((user) => user.email !== userId);
+    setUsers(result);
+  };
+
+  const getListFriends = async (token: string) => {
+    const res = await ContactApi.getFriends(token);
+    return res.data;
+  };
+
+  // SIDE EFFECT
+
+  useEffect(() => {
+    const getUserInfo = async () => {
+      const info = await Store.getUserData();
+      // userInfo = info;
+      const res = await getListFriends(TOKEN);
+      setFriends(res);
+      return info;
+    };
+    getUserInfo();
+  }, []);
+
   // FLAT LIST
-  const renderItem = ({item}: any) => <UserCircleAvatar />;
+  const renderCircleInfoItem = ({item}: any) => (
+    <UserCircleAvatar
+      key={item.id}
+      name={item.name}
+      img={item.img}
+      onDelete={() => {
+        onDeleteUser(item.email);
+      }}
+    />
+  );
   const renderUserItem = ({item}: any) => (
     <UserInfoCard
-      img="https://encrypted-tbn0.gstatic.com/images?q=tbn%3AANd9GcSu_CkYd2E5LFALTLFSok-gMV5Tw9hxUQSyxg&usqp=CAU"
-      email="nam@gmail.com"
-      isOnline={true}
-      name="Nam Nguyen"
+      id={item._id}
+      img={item.avatar}
+      email={item.email}
+      isOnline={item.isActive}
+      name={item.fullName}
+      onPress={onAddUserToGroup}
     />
   );
   const renderKey = (item: any) => item.id;
+
   return (
     <View style={style.container}>
       <View style={style.header}>
@@ -47,9 +108,11 @@ const AddingUserGroupScreen = () => {
           onPress={onBack}
         />
         <Text style={{color: colors.text}}> Create new group</Text>
-        <View style={style.btnDone}>
-          <Text style={{color: colors.text}}> Done</Text>
-        </View>
+        <TouchableOpacity onPress={() => console.log(users)}>
+          <View style={style.btnDone}>
+            <Text style={{color: colors.text}}> Done</Text>
+          </View>
+        </TouchableOpacity>
       </View>
       {/* Adding User */}
       <View style={style.AddingUserContainer}>
@@ -63,17 +126,19 @@ const AddingUserGroupScreen = () => {
               color={colors.text}
             />
           }
+          onChangeText={onSearch}
         />
+        <View style={{height: hs(110)}}>
+          <FlatList
+            horizontal={true}
+            data={users}
+            renderItem={renderCircleInfoItem}
+            keyExtractor={renderKey}
+            showsHorizontalScrollIndicator={false}
+          />
+        </View>
         <FlatList
-          style={{height: hs(130)}}
-          horizontal={true}
-          data={DATA}
-          renderItem={renderItem}
-          keyExtractor={renderKey}
-          showsHorizontalScrollIndicator={false}
-        />
-        <FlatList
-          data={DATA}
+          data={searchKey ? searchResults : friends}
           renderItem={renderUserItem}
           keyExtractor={renderKey}
         />
@@ -81,6 +146,7 @@ const AddingUserGroupScreen = () => {
     </View>
   );
 };
+
 const style = StyleSheet.create({
   container: {
     flex: 1,

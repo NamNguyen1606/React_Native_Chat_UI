@@ -1,45 +1,71 @@
 import React from 'react';
-import {View, StyleSheet, Image, Text} from 'react-native';
+import {View, StyleSheet, Image, Text, TouchableOpacity} from 'react-native';
 import {Icon} from 'react-native-elements';
-import {hs} from '../../utils/scaling';
+import {hs, ms} from '../../utils/scaling';
 import {useTheme} from '@react-navigation/native';
 
-interface Props {}
+interface Props {
+  img: string;
+  name: string;
+  onDelete?: () => void;
+}
 
-const UserCircleAvatar = () => {
+const UserCircleAvatar: React.FC<Props> = (props) => {
   const {colors} = useTheme();
   return (
     <View style={style.container}>
-      <Image
-        style={style.container}
-        source={{
-          uri:
-            'https://encrypted-tbn0.gstatic.com/images?q=tbn%3AANd9GcSu_CkYd2E5LFALTLFSok-gMV5Tw9hxUQSyxg&usqp=CAU',
-        }}
-      />
-      <View style={style.closeCircle}>
-        <Icon
-          name="close"
-          type="material-community"
-          size={hs(10)}
-          color={'white'}
+      <View style={style.imageHolder}>
+        <Image
+          style={style.image}
+          source={{
+            uri: props.img,
+          }}
         />
+        <TouchableOpacity
+          style={style.closeCircle}
+          activeOpacity={0.6}
+          onPress={props.onDelete}>
+          <View>
+            <Icon
+              name="close"
+              type="material-community"
+              size={hs(10)}
+              color={'white'}
+            />
+          </View>
+        </TouchableOpacity>
+        <Text style={{...style.txtName, color: colors.text}} numberOfLines={2}>
+          {props.name}
+        </Text>
       </View>
-      <Text style={{...style.txtName, color: colors.text}}>Nam</Text>
     </View>
   );
 };
 const style = StyleSheet.create({
   container: {
+    height: hs(90),
+    width: hs(70),
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  imageHolder: {
     height: hs(60),
     width: hs(60),
     borderRadius: hs(30),
   },
+  image: {
+    height: hs(60),
+    width: hs(60),
+    borderRadius: hs(30),
+    borderColor: 'grey',
+    borderWidth: 0.4,
+  },
   closeCircle: {
     left: hs(45),
-    height: hs(15),
-    width: hs(15),
-    borderRadius: hs(8),
+    top: hs(0),
+    height: hs(18),
+    width: hs(18),
+    borderRadius: hs(9),
     borderColor: 'white',
     borderWidth: 1,
     backgroundColor: '#2DCFEF',
@@ -48,6 +74,6 @@ const style = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  txtName: {textAlign: 'center'},
+  txtName: {fontSize: ms(12), textAlign: 'center'},
 });
 export default UserCircleAvatar;
