@@ -23,6 +23,7 @@ import ContactApi from '../../api/contactApi';
 import {FlatList} from 'react-native-gesture-handler';
 import User from '../../models/user.model';
 import {CreatingGroupScreen} from '..';
+import SOCKET from '../../utils/socket';
 
 const RoomsScreen = () => {
   let [userAvatar, setUserAvatar] = useState<string>(
@@ -38,10 +39,11 @@ const RoomsScreen = () => {
   const {colors} = useTheme();
 
   //FUNCTION
-  const onUserCardPress = async (roomId: string) => {
+  const onUserCardPress = async (roomId: string, roomName: string) => {
     navigator.navigate(Route.ChatScreen, {
       roomId: roomId,
       userId: userInfo._id,
+      roomName: roomName,
     });
   };
 
@@ -53,6 +55,14 @@ const RoomsScreen = () => {
   //   console.log(res);
   //   setRooms(res.data);
   // };
+  const getRooms = async (token: string) => {
+    try {
+      const res = await ContactApi.getRooms(token);
+      setRooms(res.data);
+    } catch (err) {
+      console.log(err);
+    }
+  };
 
   // SIDE EFFECT
   useEffect(() => {
@@ -63,15 +73,18 @@ const RoomsScreen = () => {
       getRooms(user._token);
     };
 
-    const getRooms = async (token: string) => {
-      try {
-        const res = await ContactApi.getRooms(token);
-        setRooms(res.data);
-      } catch (err) {
-        console.log(err);
-      }
-    };
     getUserInfo();
+  }, []);
+
+  //Socket
+  useEffect(() => {
+    SOCKET.emit(SocketName.Join, userInfo._id);
+  }, []);
+
+  useEffect(() => {
+    SOCKET.on(SocketName.NewRoom, (data: any) => {
+      console.log(data);
+    });
   }, []);
 
   // FLATLIST
@@ -82,7 +95,9 @@ const RoomsScreen = () => {
       lastTimeActive="1h ago"
       isOnline={true}
       img={item.roomInfo.avatar}
-      onPress={() => onUserCardPress(item.roomData.roomId)}
+      onPress={() =>
+        onUserCardPress(item.roomData.roomId, item.roomInfo.fullName)
+      }
     />
   );
   const isActive = true;

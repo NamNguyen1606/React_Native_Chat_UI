@@ -16,7 +16,7 @@ const Stack = createStackNavigator();
 
 const MainStack = () => {
   return (
-    <Stack.Navigator initialRouteName={Route.HomeScreen}>
+    <Stack.Navigator initialRouteName={Route.LoginScreen}>
       <Stack.Screen
         name={Route.CreatingGroup}
         component={CreatingGroupScreen}

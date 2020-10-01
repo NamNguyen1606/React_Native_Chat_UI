@@ -23,7 +23,6 @@ interface Props {
 
 const UserInfoCard: React.FC<Props> = (props) => {
   const {colors} = useTheme();
-  // const [checked, setChecked] = useState<boolean>(props.checked);
   return (
     <View style={style.container}>
       <View style={style.avatarContainer}>

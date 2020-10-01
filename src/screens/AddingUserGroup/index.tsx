@@ -9,17 +9,17 @@ import Store from '../../utils/asyncStore';
 import {hs, vs} from '../../utils/scaling';
 import UserApi from '../../api/user.api';
 import RoomApi from '../../api/roomApi';
+import Route from '../../utils/route';
 
 let search = UserApi.createSearchRequest();
-const TOKEN =
-  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI1ZjcxYWNjNmJiMTVkMDVkYTgxNmM2ZDIiLCJleHAiOjE2MDM5NjE5ODQsImlhdCI6MTYwMTM2OTk4NH0.qMLMBW3LHJb-39EDZQCyDlMzeXB2nKsbM89JAvstPDQ';
 
 interface Props {}
-// let userInfo: any;
 
-const AddingUserGroupScreen = () => {
+const AddingUserGroupScreen = ({route}: any) => {
+  const [userId, setUserId] = useState<string>('');
   const {colors} = useTheme();
   const navigator = useNavigation();
+  const {groupName} = route.params;
 
   const [users, setUsers] = useState<any[]>([]);
   const [friends, setFriends] = useState<any[]>([]);
@@ -47,11 +47,11 @@ const AddingUserGroupScreen = () => {
     for (const obj of users) {
       userIdList.push(obj.id);
     }
-    const res = await RoomApi.createRoom(
-      '5f71acc6bb15d05da816c6d2',
-      userIdList,
-      'PSC Tesing',
-    );
+
+    const res = await RoomApi.createRoom(userId, userIdList, groupName);
+    console.log(userId);
+    console.log(res);
+    navigator.navigate(Route.HomeScreen);
   };
 
   const onAddUserToGroup = (userInfo: any) => {
@@ -93,11 +93,12 @@ const AddingUserGroupScreen = () => {
 
   const toggleCheckBox = (checked: boolean, userEmail: string) => {
     let index = friends.findIndex((obj) => obj.email === userEmail);
+    if (index === -1) {
+      return;
+    }
     let temp = friends;
     temp[index].isCheck = checked;
-    console.log(friends[0].isCheck);
     setFriends(temp);
-    console.log(friends[0].isCheck);
   };
 
   // SIDE EFFECT
@@ -114,13 +115,12 @@ const AddingUserGroupScreen = () => {
   useEffect(() => {
     const getUserInfo = async () => {
       const info = await Store.getUserData();
-      const res = await getListFriends(TOKEN);
+      const res = await getListFriends(info._token);
       for (let obj of res) {
         obj.isCheck = false;
       }
-      console.log(res);
+      setUserId(info._id);
       setFriends(res);
-      return info;
     };
     getUserInfo();
   }, []);
@@ -204,6 +204,19 @@ const AddingUserGroupScreen = () => {
         </Animated.View>
         <View>
           <Text>Contact</Text>
+          {/* {searchKey ? (
+            <FlatList
+              data={searchResults}
+              renderItem={renderUserItem}
+              keyExtractor={renderUserKey}
+            />
+          ) : (
+            <FlatList
+              data={friends}
+              renderItem={renderUserItem}
+              keyExtractor={renderUserKey}
+            />
+          )} */}
           <FlatList
             data={searchKey ? searchResults : friends}
             renderItem={renderUserItem}

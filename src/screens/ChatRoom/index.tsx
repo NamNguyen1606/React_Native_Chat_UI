@@ -9,9 +9,8 @@ import MessageApi from '../../api/message.api';
 import {FlatList} from 'react-native-gesture-handler';
 import SocketName from '../../utils/socketNamespace';
 import {usePaginatedQuery} from 'react-query';
-import io from 'socket.io-client';
+import SOCKET from '../../utils/socket';
 
-const SOCKET = io('https://pscchattest.azurewebsites.net');
 interface Props {
   route: any;
 }
@@ -23,6 +22,7 @@ const ChatRoomScreen: React.FC<Props> = ({route}) => {
   const {colors} = useTheme();
   const {roomId} = route.params;
   const {userId} = route.params;
+  const {roomName} = route.params;
   const [page, setPage] = useState<number>(1);
 
   // FUNCTION
@@ -151,7 +151,7 @@ const ChatRoomScreen: React.FC<Props> = ({route}) => {
         <View style={style.subHeader}>
           <View style={style.headerInfoHolder}>
             <Text style={{...style.txtReceiverName, color: colors.text}}>
-              Nam Nguyen
+              {roomName}
             </Text>
             <View style={style.statusInfoHolder}>
               <View style={[style.activePoint, getStatusStateUI()]} />

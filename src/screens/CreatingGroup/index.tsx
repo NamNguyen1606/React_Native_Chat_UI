@@ -1,4 +1,4 @@
-import React, {useRef, useState, useEffect} from 'react';
+import React, {useEffect, useState} from 'react';
 import {
   View,
   StyleSheet,
@@ -13,38 +13,45 @@ import {useTheme, useNavigation} from '@react-navigation/native';
 import Route from '../../utils/route';
 
 interface Props {}
+const degValue = new Animated.Value(1);
 
 const CreatingGroupScreen = () => {
   const {colors} = useTheme();
   const navigator = useNavigation();
   const [groupName, setGroupName] = useState<string>('');
-  const degValue = new Animated.Value(0);
   const deg = degValue.interpolate({
     inputRange: [0, 1],
     outputRange: ['-90deg', '0deg'],
   });
+  const colorInterpolate = degValue.interpolate({
+    inputRange: [0, 1],
+    outputRange: ['rgb(158,158,158)', 'rgb(90,210,244)'],
+  });
+
+  const animatedStyle = {
+    backgroundColor: colorInterpolate,
+  };
+
   //FUNCTIONs
   const handleGroupName = (value: string) => setGroupName(value);
 
-  const onNext = () => navigator.navigate(Route.AddingGroup);
-  const onRotate = () => {
+  const onNext = () =>
+    navigator.navigate(Route.AddingGroup, {groupName: groupName});
+  const onRotate = (value: number) => {
+    // degValue.setValue(0);
     Animated.timing(degValue, {
-      toValue: groupName ? 1 : 0,
-      duration: 800,
-      useNativeDriver: true,
+      toValue: value,
+      duration: 500,
+      useNativeDriver: false,
     }).start();
   };
 
   // SIDE EFFECT
-  // useEffect(() => {}, [deg]);
-
-  // useEffect(() => {
-  //   Animated.timing(degValue, {
-  //     toValue: groupName ? 1 : 0,
-  //     duration: 800,
-  //     useNativeDriver: true,
-  //   }).start();
-  // }, [groupName]);
+  useEffect(() => {
+    if (!groupName) {
+      onRotate(0);
+    }
+  }, [groupName]);
 
   return (
     <View style={style.container}>
@@ -65,7 +72,11 @@ const CreatingGroupScreen = () => {
             placeholder=" ENTER GROUP NAME "
             placeholderTextColor={colors.text}
             onChangeText={handleGroupName}
-            onEndEditing={onRotate}
+            onEndEditing={() => {
+              if (groupName) {
+                onRotate(1);
+              }
+            }}
           />
           <TouchableOpacity
             disabled={groupName ? false : true}
@@ -75,11 +86,12 @@ const CreatingGroupScreen = () => {
               style={{
                 ...style.submitBtn,
                 transform: [{rotate: deg}],
+                ...animatedStyle,
               }}>
               <Icon
                 name="arrow-right"
                 type="material-community"
-                size={vs(25)}
+                size={hs(35)}
                 color={'white'}
               />
             </Animated.View>
@@ -123,9 +135,9 @@ const style = StyleSheet.create({
     borderBottomWidth: 0.5,
   },
   submitBtn: {
-    height: hs(45),
-    width: hs(45),
-    borderRadius: hs(25),
+    height: hs(55),
+    width: hs(55),
+    borderRadius: hs(30),
     backgroundColor: '#2DCFEF',
     justifyContent: 'center',
     alignItems: 'center',
