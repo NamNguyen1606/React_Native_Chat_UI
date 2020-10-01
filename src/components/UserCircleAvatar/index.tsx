@@ -43,7 +43,7 @@ const UserCircleAvatar: React.FC<Props> = (props) => {
 };
 const style = StyleSheet.create({
   container: {
-    height: hs(90),
+    height: hs(80),
     width: hs(70),
     justifyContent: 'center',
     alignItems: 'center',

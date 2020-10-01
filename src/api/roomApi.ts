@@ -12,5 +12,14 @@ class RoomApi {
       isGroup: isGroup,
     });
   };
+
+  static createRoom = (ownerId: string, users: string[], groupName: string) => {
+    const url = 'rooms/group';
+    return AxiosClient.post(url, {
+      ownerId: ownerId,
+      users: users,
+      groupName: groupName,
+    });
+  };
 }
 export default RoomApi;

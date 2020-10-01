@@ -1,7 +1,7 @@
 import {useTheme} from '@react-navigation/native';
 import React from 'react';
-import {View, StyleSheet, Image, Text, TouchableOpacity} from 'react-native';
-import {Icon} from 'react-native-elements';
+import {View, StyleSheet, Image, Text} from 'react-native';
+import {CheckBox} from 'react-native-elements';
 import {hs, ms, vs} from '../../utils/scaling';
 
 interface userInfo {
@@ -16,11 +16,14 @@ interface Props {
   name: string;
   email: string;
   isOnline: boolean;
-  onPress: (data: userInfo) => void;
+  checked: boolean;
+  onChecked: (data: userInfo) => void;
+  onUnChecked: () => void;
 }
 
 const UserInfoCard: React.FC<Props> = (props) => {
   const {colors} = useTheme();
+  // const [checked, setChecked] = useState<boolean>(props.checked);
   return (
     <View style={style.container}>
       <View style={style.avatarContainer}>
@@ -47,24 +50,40 @@ const UserInfoCard: React.FC<Props> = (props) => {
           </Text>
         </View>
         <View style={style.Adding}>
-          <TouchableOpacity
-            onPress={() =>
-              props.onPress({
-                id: props.id,
-                email: props.email,
-                img: props.img,
-                name: props.name,
-              })
-            }>
-            <View style={style.btnDone}>
-              <Icon
+          {/* <View style={style.btnDone}> */}
+          <CheckBox
+            checked={props.checked}
+            iconType="material"
+            checkedIcon="clear"
+            uncheckedIcon="add"
+            checkedColor="white"
+            containerStyle={[
+              style.btnDone,
+              props.checked
+                ? {backgroundColor: '#2DCFEF'}
+                : {backgroundColor: 'white'},
+            ]}
+            onPress={() => {
+              // setChecked(!checked);
+              if (props.checked) {
+                props.onUnChecked();
+              } else {
+                props.onChecked({
+                  id: props.id,
+                  email: props.email,
+                  img: props.img,
+                  name: props.name,
+                });
+              }
+            }}
+          />
+          {/* <Icon
                 name="account-plus-outline"
                 type="material-community"
-                size={hs(10)}
+                size={hs(15)}
                 color={'white'}
-              />
-            </View>
-          </TouchableOpacity>
+              /> */}
+          {/* </View> */}
         </View>
       </View>
     </View>
@@ -129,10 +148,12 @@ const style = StyleSheet.create({
     alignItems: 'flex-end',
   },
   btnDone: {
-    width: hs(25),
-    height: hs(25),
+    width: hs(30),
+    height: hs(30),
     backgroundColor: '#2DCFEF',
     borderRadius: hs(15),
+    borderColor: 'grey',
+    borderWidth: 0.5,
     padding: hs(4),
     justifyContent: 'center',
     alignItems: 'center',

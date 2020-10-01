@@ -1,11 +1,11 @@
-import React from 'react';
+import React, {useRef, useState, useEffect} from 'react';
 import {
   View,
   StyleSheet,
-  Text,
   Image,
   TextInput,
   TouchableOpacity,
+  Animated,
 } from 'react-native';
 import {hs, vs} from '../../utils/scaling';
 import {Icon} from 'react-native-elements';
@@ -17,24 +17,37 @@ interface Props {}
 const CreatingGroupScreen = () => {
   const {colors} = useTheme();
   const navigator = useNavigation();
+  const [groupName, setGroupName] = useState<string>('');
+  const degValue = new Animated.Value(0);
+  const deg = degValue.interpolate({
+    inputRange: [0, 1],
+    outputRange: ['-90deg', '0deg'],
+  });
+  //FUNCTIONs
+  const handleGroupName = (value: string) => setGroupName(value);
 
-  //FUNCTION
   const onNext = () => navigator.navigate(Route.AddingGroup);
+  const onRotate = () => {
+    Animated.timing(degValue, {
+      toValue: groupName ? 1 : 0,
+      duration: 800,
+      useNativeDriver: true,
+    }).start();
+  };
+
+  // SIDE EFFECT
+  // useEffect(() => {}, [deg]);
+
+  // useEffect(() => {
+  //   Animated.timing(degValue, {
+  //     toValue: groupName ? 1 : 0,
+  //     duration: 800,
+  //     useNativeDriver: true,
+  //   }).start();
+  // }, [groupName]);
 
   return (
     <View style={style.container}>
-      {/* HEADER */}
-      {/* <View style={style.header}>
-        <Icon
-          name="keyboard-backspace"
-          type="material-community"
-          size={vs(25)}
-          color={colors.text}
-          //   onPress={onBack}
-        />
-        <Text style={{color: colors.text}}> Create</Text>
-      </View> */}
-      {/* MIDDLE */}
       <View style={style.middle}>
         {/* Group Info */}
         <View style={style.groupInfoContainer}>
@@ -51,16 +64,25 @@ const CreatingGroupScreen = () => {
             style={{...style.inputGroupName, borderColor: colors.text}}
             placeholder=" ENTER GROUP NAME "
             placeholderTextColor={colors.text}
+            onChangeText={handleGroupName}
+            onEndEditing={onRotate}
           />
-          <TouchableOpacity activeOpacity={0} onPress={onNext}>
-            <View style={style.submitBtn}>
+          <TouchableOpacity
+            disabled={groupName ? false : true}
+            activeOpacity={0}
+            onPress={onNext}>
+            <Animated.View
+              style={{
+                ...style.submitBtn,
+                transform: [{rotate: deg}],
+              }}>
               <Icon
                 name="arrow-right"
                 type="material-community"
                 size={vs(25)}
                 color={'white'}
               />
-            </View>
+            </Animated.View>
           </TouchableOpacity>
         </View>
       </View>
@@ -79,7 +101,7 @@ const style = StyleSheet.create({
   },
   middle: {
     flex: 1,
-    paddingTop: hs(70),
+    paddingTop: hs(30),
   },
   groupInfoContainer: {
     width: '100%',

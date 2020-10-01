@@ -1,6 +1,6 @@
 import {useTheme, useNavigation} from '@react-navigation/native';
 import React, {useState, useEffect, useCallback} from 'react';
-import {View, Text, FlatList, StyleSheet} from 'react-native';
+import {View, Text, FlatList, StyleSheet, Animated} from 'react-native';
 import {Icon, Input} from 'react-native-elements';
 import {TouchableOpacity} from 'react-native-gesture-handler';
 import ContactApi from '../../api/contactApi';
@@ -8,6 +8,7 @@ import {UserCircleAvatar, UserInfoCard} from '../../components';
 import Store from '../../utils/asyncStore';
 import {hs, vs} from '../../utils/scaling';
 import UserApi from '../../api/user.api';
+import RoomApi from '../../api/roomApi';
 
 let search = UserApi.createSearchRequest();
 const TOKEN =
@@ -24,6 +25,9 @@ const AddingUserGroupScreen = () => {
   const [friends, setFriends] = useState<any[]>([]);
   const [searchResults, setSearchResults] = useState<any[]>([]);
   const [searchKey, setSearchKey] = useState<string>('');
+  const [isVisible, setIsVisible] = useState<boolean>(true);
+  const [addingUserHeight] = useState(new Animated.Value(0));
+
   //FUNCTION
   const onBack = () => {
     navigator.goBack();
@@ -37,22 +41,30 @@ const AddingUserGroupScreen = () => {
     },
     [searchKey],
   );
-  // const onSearch = async (value: string) => {
-  //   setSearchKey(value);
-  //   const res = await UserApi.search(searchKey);
-  //   setFriends(res.data);
-  // };
+
+  const onCreateGroup = async () => {
+    let userIdList = [];
+    for (const obj of users) {
+      userIdList.push(obj.id);
+    }
+    const res = await RoomApi.createRoom(
+      '5f71acc6bb15d05da816c6d2',
+      userIdList,
+      'PSC Tesing',
+    );
+  };
 
   const onAddUserToGroup = (userInfo: any) => {
+    toggleCheckBox(true, userInfo.email);
     const index = users.findIndex((user) => user.id === userInfo.id);
     if (index === -1) {
       setUsers([...users, userInfo]);
     }
   };
 
-  const onDeleteUser = (userId: string) => {
-    console.log(userId);
-    const result = users.filter((user) => user.email !== userId);
+  const onDeleteUser = (userEmail: string) => {
+    const result = users.filter((user) => user.email !== userEmail);
+    toggleCheckBox(false, userEmail);
     setUsers(result);
   };
 
@@ -61,13 +73,52 @@ const AddingUserGroupScreen = () => {
     return res.data;
   };
 
-  // SIDE EFFECT
+  const onStartTouch = () => {
+    setIsVisible(false);
+    Animated.spring(addingUserHeight, {
+      toValue: hs(0),
+      useNativeDriver: false,
+      bounciness: 0,
+    }).start();
+  };
 
+  const onEndTouch = () => {
+    Animated.spring(addingUserHeight, {
+      toValue: users.length === 0 ? hs(20) : hs(130),
+      useNativeDriver: false,
+      bounciness: 0,
+    }).start();
+    setIsVisible(true);
+  };
+
+  const toggleCheckBox = (checked: boolean, userEmail: string) => {
+    let index = friends.findIndex((obj) => obj.email === userEmail);
+    let temp = friends;
+    temp[index].isCheck = checked;
+    console.log(friends[0].isCheck);
+    setFriends(temp);
+    console.log(friends[0].isCheck);
+  };
+
+  // SIDE EFFECT
+  // Animated
+  useEffect(() => {
+    Animated.spring(addingUserHeight, {
+      toValue: users.length === 0 ? hs(20) : hs(130),
+      useNativeDriver: false,
+      bounciness: 0,
+    }).start();
+  }, [addingUserHeight, users.length]);
+
+  //Api
   useEffect(() => {
     const getUserInfo = async () => {
       const info = await Store.getUserData();
-      // userInfo = info;
       const res = await getListFriends(TOKEN);
+      for (let obj of res) {
+        obj.isCheck = false;
+      }
+      console.log(res);
       setFriends(res);
       return info;
     };
@@ -92,10 +143,15 @@ const AddingUserGroupScreen = () => {
       email={item.email}
       isOnline={item.isActive}
       name={item.fullName}
-      onPress={onAddUserToGroup}
+      checked={item.isCheck}
+      onChecked={onAddUserToGroup}
+      onUnChecked={() => {
+        onDeleteUser(item.email);
+      }}
     />
   );
-  const renderKey = (item: any) => item.id;
+  const renderUserKey = (item: any) => item._id;
+  const renderUserAvatarKey = (item: any) => item.id;
 
   return (
     <View style={style.container}>
@@ -108,7 +164,7 @@ const AddingUserGroupScreen = () => {
           onPress={onBack}
         />
         <Text style={{color: colors.text}}> Create new group</Text>
-        <TouchableOpacity onPress={() => console.log(users)}>
+        <TouchableOpacity onPress={onCreateGroup}>
           <View style={style.btnDone}>
             <Text style={{color: colors.text}}> Done</Text>
           </View>
@@ -127,21 +183,33 @@ const AddingUserGroupScreen = () => {
             />
           }
           onChangeText={onSearch}
+          onTouchStart={onStartTouch}
+          onEndEditing={onEndTouch}
+          // onSubmitEditing={onEndTouch}
         />
-        <View style={{height: hs(110)}}>
+        <Animated.View
+          style={{...style.circleUserHolder, height: addingUserHeight}}>
+          {!isVisible || (
+            <Text style={style.txtAddingUserTittle}>
+              {users.length === 0 ? 'EMPTY' : `${users.length} users`}
+            </Text>
+          )}
           <FlatList
             horizontal={true}
             data={users}
             renderItem={renderCircleInfoItem}
-            keyExtractor={renderKey}
+            keyExtractor={renderUserAvatarKey}
             showsHorizontalScrollIndicator={false}
           />
+        </Animated.View>
+        <View>
+          <Text>Contact</Text>
+          <FlatList
+            data={searchKey ? searchResults : friends}
+            renderItem={renderUserItem}
+            keyExtractor={renderUserKey}
+          />
         </View>
-        <FlatList
-          data={searchKey ? searchResults : friends}
-          renderItem={renderUserItem}
-          keyExtractor={renderKey}
-        />
       </View>
     </View>
   );
@@ -169,5 +237,10 @@ const style = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
+  circleUserHolder: {
+    backgroundColor: '#EDEDED',
+    borderRadius: hs(10),
+  },
+  txtAddingUserTittle: {alignSelf: 'center'},
 });
 export default AddingUserGroupScreen;
