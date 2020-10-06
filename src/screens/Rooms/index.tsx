@@ -31,6 +31,8 @@ const RoomsScreen = () => {
   );
   const [searchKey, setSearchKey] = useState<String>('');
   const [rooms, setRooms] = useState<any[]>([]);
+  const [socketData, setSocketData] = useState<any>();
+  const [socketNewRoom, setSocketNewRoom] = useState<any>();
   const [userInfo, setUserInfo] = useState<any>();
   const [userActiveList, setUserActiveList] = useState<[]>([]);
 
@@ -49,12 +51,17 @@ const RoomsScreen = () => {
 
   const onCreateGroup = () => navigator.navigate(Route.CreatingGroup);
 
-  // const onSearch = async (value: string) => {
-  //   setSearchKey(value);
-  //   const res = await ContactApi.getRooms(value);
-  //   console.log(res);
-  //   setRooms(res.data);
-  // };
+  const updateList = (roomId: string, message: string) => {
+    const index = rooms.findIndex((obj) => obj.roomData.roomId === roomId);
+    if (index !== -1) {
+      const room = rooms[index];
+      room.message.newMessage = message;
+      const newRooms = rooms;
+      newRooms.splice(index, 1);
+      setRooms([room, ...newRooms]);
+    }
+  };
+
   const getRooms = async (token: string) => {
     try {
       const res = await ContactApi.getRooms(token);
@@ -71,27 +78,44 @@ const RoomsScreen = () => {
       setUserInfo(user);
       setUserAvatar(user._avatar);
       getRooms(user._token);
+      SOCKET.emit(SocketName.Join, user._id);
     };
 
     getUserInfo();
   }, []);
 
   //Socket
-  useEffect(() => {
-    SOCKET.emit(SocketName.Join, userInfo._id);
-  }, []);
 
   useEffect(() => {
     SOCKET.on(SocketName.NewRoom, (data: any) => {
-      console.log(data);
+      setSocketData(data);
     });
   }, []);
+
+  useEffect(() => {
+    if (socketData) {
+      setRooms([socketData, ...rooms]);
+    }
+  }, [socketData]);
+
+  // NEW MESSAGE IN EXIST ROOM
+  useEffect(() => {
+    SOCKET.on(SocketName.RoomHaveNewMessage, (data: any) => {
+      setSocketNewRoom(data);
+    });
+  }, []);
+
+  useEffect(() => {
+    if (socketNewRoom) {
+      updateList(socketNewRoom.roomId, socketNewRoom.message);
+    }
+  }, [socketNewRoom]);
 
   // FLATLIST
   const renderRooms = ({item}: any) => (
     <UserCard
       name={item.roomInfo.fullName}
-      lastMsg={item.roomData.newMessage}
+      lastMsg={item.message.newMessage}
       lastTimeActive="1h ago"
       isOnline={true}
       img={item.roomInfo.avatar}

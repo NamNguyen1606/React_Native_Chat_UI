@@ -6,4 +6,5 @@ export default class SocketName {
   static Messages: string = 'messages';
   static Join: string = 'join';
   static NewRoom: string = 'new_room';
+  static RoomHaveNewMessage: string = 'room_have_new_message';
 }

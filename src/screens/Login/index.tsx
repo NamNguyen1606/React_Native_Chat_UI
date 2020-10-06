@@ -35,7 +35,8 @@ const LoginScreen = () => {
 
   const onLogin = async () => {
     setIsLoading(true);
-    const res: any = await UserApi.login(info.email, info.password);
+    // const res: any = await UserApi.login(info.email, info.password);
+    const res: any = await UserApi.login(info.email, '123456');
     if (res.success) {
       const user = new User({
         id: res.data._id,
