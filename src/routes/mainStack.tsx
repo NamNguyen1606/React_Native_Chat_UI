@@ -8,6 +8,7 @@ import {
   ChatRoomScreen,
   AddingUserGroupScreen,
   CreatingGroupScreen,
+  SearchingScreen,
 } from '../screens';
 
 interface Props {}
@@ -45,6 +46,11 @@ const MainStack = () => {
       <Stack.Screen
         name={Route.ChatScreen}
         component={ChatRoomScreen}
+        options={{headerShown: false}}
+      />
+      <Stack.Screen
+        name={Route.SearchingScreen}
+        component={SearchingScreen}
         options={{headerShown: false}}
       />
     </Stack.Navigator>

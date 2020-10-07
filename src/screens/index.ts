@@ -6,6 +6,7 @@ import RegisterScreen from './Register';
 import LoginScreen from './Login/index';
 import CreatingGroupScreen from './CreatingGroup';
 import AddingUserGroupScreen from './AddingUserGroup';
+import SearchingScreen from './SearchingScreen';
 
 export {
   ChatRoomScreen,
@@ -16,4 +17,5 @@ export {
   LoginScreen,
   CreatingGroupScreen,
   AddingUserGroupScreen,
+  SearchingScreen,
 };

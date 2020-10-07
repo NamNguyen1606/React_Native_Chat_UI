@@ -23,14 +23,9 @@ class UserApi {
     });
   };
 
-  static search = (search: string) => {
-    const url = 'users/search';
-    return AxiosClient.post(url, {searchKey: search});
-  };
-
   static createSearchRequest = () => {
     let call: CancelTokenSource;
-    return (search: string) => {
+    return (search: string, token: string) => {
       if (call) {
         call.cancel('CANCEL REQUEST');
       }
@@ -39,7 +34,7 @@ class UserApi {
       return AxiosClient.post(
         url,
         {searchKey: search},
-        {cancelToken: call.token},
+        {cancelToken: call.token, headers: {token: token}},
       );
     };
   };

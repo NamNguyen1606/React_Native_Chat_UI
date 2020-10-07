@@ -20,7 +20,7 @@ const AddingUserGroupScreen = ({route}: any) => {
   const {colors} = useTheme();
   const navigator = useNavigation();
   const {groupName} = route.params;
-
+  const [token, setToken] = useState<any>('');
   const [users, setUsers] = useState<any[]>([]);
   const [friends, setFriends] = useState<any[]>([]);
   const [searchResults, setSearchResults] = useState<any[]>([]);
@@ -36,10 +36,12 @@ const AddingUserGroupScreen = ({route}: any) => {
   const onSearch = useCallback(
     async (value: string) => {
       setSearchKey(value);
-      const res = await search(searchKey);
-      setSearchResults(res.data);
+      if (token) {
+        const res = await search(searchKey, token);
+        setSearchResults(res.data);
+      }
     },
-    [searchKey],
+    [searchKey, token],
   );
 
   const onCreateGroup = async () => {
@@ -120,6 +122,7 @@ const AddingUserGroupScreen = ({route}: any) => {
         obj.isCheck = false;
       }
       setUserId(info._id);
+      setToken(info._token);
       setFriends(res);
     };
     getUserInfo();

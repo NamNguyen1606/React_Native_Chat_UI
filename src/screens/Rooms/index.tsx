@@ -12,7 +12,7 @@ import Route from '../../utils/route';
 import MessageApi from '../../api/message.api';
 import {vs, hs, ms} from '../../utils/scaling';
 import {Icon, Overlay} from 'react-native-elements';
-import UserCard from '../../components/UserCard';
+import RoomCard from '../../components/RoomCard';
 import {ThemeContext} from '../../../App';
 import {Color} from '../../utils/theme';
 import Store from '../../utils/asyncStore';
@@ -48,6 +48,12 @@ const RoomsScreen = () => {
       roomName: roomName,
     });
   };
+
+  const onSearching = () =>
+    navigator.navigate(Route.SearchingScreen, {
+      token: userInfo._token,
+      userId: userInfo._id,
+    });
 
   const onCreateGroup = () => navigator.navigate(Route.CreatingGroup);
 
@@ -88,6 +94,7 @@ const RoomsScreen = () => {
 
   useEffect(() => {
     SOCKET.on(SocketName.NewRoom, (data: any) => {
+      console.log(data);
       setSocketData(data);
     });
   }, []);
@@ -113,7 +120,7 @@ const RoomsScreen = () => {
 
   // FLATLIST
   const renderRooms = ({item}: any) => (
-    <UserCard
+    <RoomCard
       name={item.roomInfo.fullName}
       lastMsg={item.message.newMessage}
       lastTimeActive="1h ago"
@@ -166,12 +173,14 @@ const RoomsScreen = () => {
             size={vs(25)}
             color={colors.text}
           />
+          <View style={{width: hs(10)}} />
           <Icon
             name="magnify"
             type="material-community"
-            style={{marginLeft: hs(10)}}
+            // style={{marginLeft: hs(30)}}
             size={vs(25)}
             color={colors.text}
+            onPress={onSearching}
           />
         </View>
       </View>
@@ -182,7 +191,7 @@ const RoomsScreen = () => {
           activeOpacity={0.5}
           onPress={onCreateGroup}>
           <Icon
-            name="account-plus-outline"
+            name="account-multiple-plus-outline"
             type="material-community"
             size={hs(25)}
             color={'white'}

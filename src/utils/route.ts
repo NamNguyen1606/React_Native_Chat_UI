@@ -6,4 +6,5 @@ export default class Route {
   static ChatScreen = 'chatScreen';
   static AddingGroup = 'addingScreen';
   static CreatingGroup = 'creatingScreen';
+  static SearchingScreen = 'searchingScreen';
 }

@@ -10,6 +10,24 @@ class ContactApi {
     const url = 'contact/friends';
     return AxiosClient.get(url, {headers: {token: token}});
   };
+
+  static checkFriendExist = (token: string, friendId: string) => {
+    const url = 'contact/checkFriendExist';
+    return AxiosClient.post(
+      url,
+      {friendId: friendId},
+      {headers: {token: token}},
+    );
+  };
+
+  static addFriend = (token: string, recipientId: string) => {
+    const url = 'contact/friends';
+    return AxiosClient.post(
+      url,
+      {recipientId: recipientId},
+      {headers: {token: token}},
+    );
+  };
 }
 
 export default ContactApi;

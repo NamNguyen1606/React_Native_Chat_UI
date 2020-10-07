@@ -1,21 +1,29 @@
 import {useTheme} from '@react-navigation/native';
 import React from 'react';
 import {View, StyleSheet, Image, Text, TouchableOpacity} from 'react-native';
+import {Icon} from 'react-native-elements';
 import {hs, ms, vs} from '../../utils/scaling';
 
-interface Props {
+interface userInfo {
+  id: string;
   img: string;
   name: string;
-  lastMsg: string;
-  lastTimeActive: string;
+  email: string;
+}
+interface Props {
+  id: string;
+  img: string;
+  name: string;
+  email: string;
   isOnline: boolean;
+  isStranger: boolean;
   onPress?: () => void;
 }
 
-const UserCard: React.FC<Props> = (props) => {
+const ContactCard: React.FC<Props> = (props) => {
   const {colors} = useTheme();
   return (
-    <TouchableOpacity onPress={props.onPress}>
+    <TouchableOpacity onPress={props.onPress} activeOpacity={0.4}>
       <View style={style.container}>
         <View style={style.avatarContainer}>
           <Image
@@ -24,28 +32,35 @@ const UserCard: React.FC<Props> = (props) => {
               uri: props.img,
             }}
           />
-          <View
-            style={[
-              style.activePoint,
-              props.isOnline
-                ? {backgroundColor: '#4ADC61'}
-                : {backgroundColor: '#D0D0D0'},
-            ]}
-          />
+          {props.isStranger || (
+            <View
+              style={[
+                style.activePoint,
+                props.isOnline
+                  ? {backgroundColor: '#4ADC61'}
+                  : {backgroundColor: '#D0D0D0'},
+              ]}
+            />
+          )}
         </View>
         <View style={{...style.contentHolder, borderColor: colors.border}}>
           <View style={style.messageHolder}>
-            <Text style={{...style.txtUsername, color: colors.text}}>
-              {props.name}
-            </Text>
+            <Text style={style.txtUsername}>{props.name}</Text>
             <Text style={{...style.txtMessage, color: colors.text}}>
-              {props.lastMsg}
+              {props.email}
             </Text>
           </View>
-          <View style={style.lastTimeActive}>
-            <Text style={{...style.txtLastTimeActive, color: colors.text}}>
-              {props.lastTimeActive}
-            </Text>
+          <View style={style.Adding}>
+            {/* {!props.isStranger || (
+            <View style={style.btnDone}>
+              <Icon
+                name="account-plus-outline"
+                type="material-community"
+                size={hs(15)}
+                color={'white'}
+              />
+            </View>
+          )} */}
           </View>
         </View>
       </View>
@@ -55,23 +70,26 @@ const UserCard: React.FC<Props> = (props) => {
 
 const style = StyleSheet.create({
   container: {
-    height: vs(80),
+    height: hs(60),
+    width: '100%',
     flexDirection: 'row',
   },
   avatarContainer: {
-    width: hs(75),
-    height: hs(75),
+    width: hs(60),
+    height: hs(60),
   },
   img: {
     flex: 1,
     margin: vs(8),
     borderRadius: vs(40),
+    borderColor: 'grey',
+    borderWidth: 0.4,
   },
   activePoint: {
-    top: ms(52),
-    left: ms(52),
-    height: vs(14),
-    width: vs(14),
+    top: ms(40),
+    left: ms(40),
+    height: vs(12),
+    width: vs(12),
     backgroundColor: '#04B31A',
     borderRadius: vs(10),
     position: 'absolute',
@@ -89,22 +107,35 @@ const style = StyleSheet.create({
     justifyContent: 'center',
     paddingLeft: hs(8),
   },
-  lastTimeActive: {
+  Adding: {
     height: '100%',
-    width: '100%',
+    justifyContent: 'center',
+    marginRight: hs(10),
   },
   txtUsername: {
-    fontSize: ms(18),
+    fontSize: ms(14),
+    color: 'blue',
     marginBottom: vs(5),
   },
   txtMessage: {
-    fontSize: ms(14),
+    fontSize: ms(12),
   },
   txtLastTimeActive: {
     marginTop: vs(18),
     fontSize: ms(12),
     alignItems: 'flex-end',
   },
+  btnDone: {
+    width: hs(30),
+    height: hs(30),
+    backgroundColor: '#2DCFEF',
+    borderRadius: hs(15),
+    // borderColor: 'grey',
+    // borderWidth: 0.5,
+    padding: hs(4),
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
 });
 
-export default UserCard;
+export default ContactCard;
