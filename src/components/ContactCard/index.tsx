@@ -50,18 +50,6 @@ const ContactCard: React.FC<Props> = (props) => {
               {props.email}
             </Text>
           </View>
-          <View style={style.Adding}>
-            {/* {!props.isStranger || (
-            <View style={style.btnDone}>
-              <Icon
-                name="account-plus-outline"
-                type="material-community"
-                size={hs(15)}
-                color={'white'}
-              />
-            </View>
-          )} */}
-          </View>
         </View>
       </View>
     </TouchableOpacity>
@@ -97,6 +85,7 @@ const style = StyleSheet.create({
     borderWidth: ms(1.2),
   },
   contentHolder: {
+    width: '80%',
     flexDirection: 'row',
     justifyContent: 'space-between',
     borderBottomWidth: 0.5,
@@ -114,7 +103,8 @@ const style = StyleSheet.create({
   },
   txtUsername: {
     fontSize: ms(14),
-    color: 'blue',
+    color: '#262626',
+    fontWeight: '700',
     marginBottom: vs(5),
   },
   txtMessage: {

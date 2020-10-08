@@ -13,19 +13,17 @@ interface Props {
 const UserCircleAvatar: React.FC<Props> = (props) => {
   const {colors} = useTheme();
   return (
-    <View style={style.container}>
-      <View style={style.imageHolder}>
-        <Image
-          style={style.image}
-          source={{
-            uri: props.img,
-          }}
-        />
-        <TouchableOpacity
-          style={style.closeCircle}
-          activeOpacity={0.6}
-          onPress={props.onDelete}>
-          <View>
+    <TouchableOpacity activeOpacity={0.6} onPress={props.onDelete}>
+      <View style={style.container}>
+        <View style={style.imageHolder}>
+          <Image
+            style={style.image}
+            source={{
+              uri: props.img,
+            }}
+          />
+
+          <View style={style.closeCircle}>
             <Icon
               name="close"
               type="material-community"
@@ -33,12 +31,14 @@ const UserCircleAvatar: React.FC<Props> = (props) => {
               color={'white'}
             />
           </View>
-        </TouchableOpacity>
-        <Text style={{...style.txtName, color: colors.text}} numberOfLines={2}>
-          {props.name}
-        </Text>
+          <Text
+            style={{...style.txtName, color: colors.text}}
+            numberOfLines={2}>
+            {props.name}
+          </Text>
+        </View>
       </View>
-    </View>
+    </TouchableOpacity>
   );
 };
 const style = StyleSheet.create({

@@ -86,7 +86,7 @@ const AddingUserGroupScreen = ({route}: any) => {
 
   const onEndTouch = () => {
     Animated.spring(addingUserHeight, {
-      toValue: users.length === 0 ? hs(20) : hs(130),
+      toValue: users.length === 0 ? hs(0) : hs(130),
       useNativeDriver: false,
       bounciness: 0,
     }).start();
@@ -107,7 +107,7 @@ const AddingUserGroupScreen = ({route}: any) => {
   // Animated
   useEffect(() => {
     Animated.spring(addingUserHeight, {
-      toValue: users.length === 0 ? hs(20) : hs(130),
+      toValue: users.length === 0 ? hs(0) : hs(130),
       useNativeDriver: false,
       bounciness: 0,
     }).start();
@@ -169,14 +169,14 @@ const AddingUserGroupScreen = ({route}: any) => {
         <Text style={{color: colors.text}}> Create new group</Text>
         <TouchableOpacity onPress={onCreateGroup}>
           <View style={style.btnDone}>
-            <Text style={{color: colors.text}}> Done</Text>
+            <Text style={{color: 'white'}}> Done</Text>
           </View>
         </TouchableOpacity>
       </View>
       {/* Adding User */}
       <View style={style.AddingUserContainer}>
         <Input
-          placeholder="INPUT WITH CUSTOM ICON"
+          placeholder="SEARCH"
           leftIcon={
             <Icon
               name="magnify"
@@ -194,7 +194,7 @@ const AddingUserGroupScreen = ({route}: any) => {
           style={{...style.circleUserHolder, height: addingUserHeight}}>
           {!isVisible || (
             <Text style={style.txtAddingUserTittle}>
-              {users.length === 0 ? 'EMPTY' : `${users.length} users`}
+              {users.length === 0 ? '' : `Count: ${users.length}`}
             </Text>
           )}
           <FlatList
@@ -206,20 +206,9 @@ const AddingUserGroupScreen = ({route}: any) => {
           />
         </Animated.View>
         <View>
-          <Text>Contact</Text>
-          {/* {searchKey ? (
-            <FlatList
-              data={searchResults}
-              renderItem={renderUserItem}
-              keyExtractor={renderUserKey}
-            />
-          ) : (
-            <FlatList
-              data={friends}
-              renderItem={renderUserItem}
-              keyExtractor={renderUserKey}
-            />
-          )} */}
+          <View style={style.subTitleContainer}>
+            <Text style={style.subTxtTitle}>FRIENDS</Text>
+          </View>
           <FlatList
             data={searchKey ? searchResults : friends}
             renderItem={renderUserItem}
@@ -248,8 +237,9 @@ const style = StyleSheet.create({
   },
   btnDone: {
     backgroundColor: '#2DCFEF',
+    height: hs(30),
+    width: hs(50),
     borderRadius: hs(10),
-    padding: hs(4),
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -257,6 +247,23 @@ const style = StyleSheet.create({
     backgroundColor: '#EDEDED',
     borderRadius: hs(10),
   },
-  txtAddingUserTittle: {alignSelf: 'center'},
+  txtAddingUserTittle: {
+    alignSelf: 'flex-start',
+    color: '#606063',
+    fontSize: hs(13),
+    fontWeight: '700',
+    marginTop: hs(5),
+    marginLeft: hs(10),
+  },
+  subTitleContainer: {
+    backgroundColor: 'white',
+    paddingTop: hs(10),
+    paddingBottom: hs(5),
+  },
+  subTxtTitle: {
+    color: '#919095',
+    fontSize: hs(13),
+    fontWeight: '700',
+  },
 });
 export default AddingUserGroupScreen;

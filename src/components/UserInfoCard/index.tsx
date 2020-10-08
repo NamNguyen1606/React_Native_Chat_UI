@@ -135,7 +135,8 @@ const style = StyleSheet.create({
   },
   txtUsername: {
     fontSize: ms(14),
-    color: 'blue',
+    color: '#262626',
+    fontWeight: '700',
     marginBottom: vs(5),
   },
   txtMessage: {

@@ -40,7 +40,7 @@ const SearchingScreen = ({route}: any) => {
   const [searchResult, setSearchResult] = useState<any[]>([]);
   const [dialogVisible, setDialogVisible] = useState<boolean>(false);
   const [dialogInfo, setDialogInfo] = useState<DialogInfo>();
-  const [loading, setLoading] = useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   const navigator = useNavigation();
   const {token} = route.params;
   const {userId} = route.params;
@@ -48,16 +48,22 @@ const SearchingScreen = ({route}: any) => {
   //FUNCTION
   const onBack = () => navigator.goBack();
 
-  const toggleDialog = () => setDialogVisible(!dialogVisible);
+  const toggleDialog = () => {
+    setDialogVisible(!dialogVisible);
+    setIsLoading(false);
+  };
 
   const onContact = async () => {
-    // const friendId = dialogInfo?.id || " ";
-    // const res: any = await ContactApi.addFriend(token, friendId);
-    // navigator.navigate(Route.ChatScreen, {
-    //   roomId: res.roomId,
-    //   userId: userId,
-    //   roomName: res.fullName,
-    // });
+    setIsLoading(true);
+    const friendId = dialogInfo?.id || ' ';
+    const res: any = await ContactApi.addFriend(token, friendId);
+    console.log(res);
+    navigator.navigate(Route.ChatScreen, {
+      roomId: res.data.roomId,
+      userId: userId,
+      roomName: res.data.fullName,
+    });
+    toggleDialog();
   };
 
   const navigateRoom = (
@@ -189,8 +195,11 @@ const SearchingScreen = ({route}: any) => {
             </TouchableOpacity>
             <TouchableOpacity onPress={onContact}>
               <View style={style.btnContainer}>
-                {/* <Text style={style.dialogBtnTxt}>CONTACT</Text> */}
-                <ActivityIndicator color="black" size="small" />
+                {isLoading ? (
+                  <ActivityIndicator color="black" size="small" />
+                ) : (
+                  <Text style={style.dialogBtnTxt}>CONTACT</Text>
+                )}
               </View>
             </TouchableOpacity>
           </View>
@@ -230,17 +239,27 @@ const SearchingScreen = ({route}: any) => {
         </View>
       </LinearGradient>
       {searchKey ? (
-        <FlatList
-          data={searchResult}
-          renderItem={renderSearchResultItem}
-          keyExtractor={renderSearchResultKey}
-        />
+        <View>
+          <View style={style.subTitleContainer}>
+            <Text style={style.subTxtTitle}>DIRECTORY</Text>
+          </View>
+          <FlatList
+            data={searchResult}
+            renderItem={renderSearchResultItem}
+            keyExtractor={renderSearchResultKey}
+          />
+        </View>
       ) : (
-        <FlatList
-          data={friends}
-          renderItem={renderFriendItem}
-          keyExtractor={renderFriendKey}
-        />
+        <View>
+          <View style={style.subTitleContainer}>
+            <Text style={style.subTxtTitle}>FRIENDS</Text>
+          </View>
+          <FlatList
+            data={friends}
+            renderItem={renderFriendItem}
+            keyExtractor={renderFriendKey}
+          />
+        </View>
       )}
       {/* <View style={style.middle}></View> */}
     </View>
@@ -255,7 +274,7 @@ const style = StyleSheet.create({
     height: ms(120, 0.7),
     backgroundColor: 'blue',
     alignItems: 'flex-start',
-    paddingLeft: hs(10),
+    paddingLeft: hs(8),
     paddingTop: hs(20),
   },
   middle: {},
@@ -314,6 +333,16 @@ const style = StyleSheet.create({
     width: '100%',
     justifyContent: 'space-between',
     marginTop: hs(18),
+  },
+  subTitleContainer: {
+    backgroundColor: '#F2F2F2',
+    paddingLeft: hs(12),
+    paddingVertical: hs(10),
+  },
+  subTxtTitle: {
+    color: '#919095',
+    fontSize: hs(12),
+    fontWeight: '700',
   },
 });
 export default SearchingScreen;

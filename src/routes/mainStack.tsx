@@ -1,4 +1,7 @@
-import {createStackNavigator} from '@react-navigation/stack';
+import {
+  createStackNavigator,
+  CardStyleInterpolators,
+} from '@react-navigation/stack';
 import React from 'react';
 import Route from '../utils/route';
 import CreateBottomTab from './bottomTabBar';
@@ -17,7 +20,11 @@ const Stack = createStackNavigator();
 
 const MainStack = () => {
   return (
-    <Stack.Navigator initialRouteName={Route.LoginScreen}>
+    <Stack.Navigator
+      initialRouteName={Route.LoginScreen}
+      screenOptions={{
+        cardStyleInterpolator: CardStyleInterpolators.forHorizontalIOS,
+      }}>
       <Stack.Screen
         name={Route.CreatingGroup}
         component={CreatingGroupScreen}

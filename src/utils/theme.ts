@@ -35,7 +35,7 @@ export const MyDefaultTheme: Theme = {
   colors: {
     ...DefaultTheme.colors,
     background: 'white',
-    text: 'black',
+    text: '#262626',
     border: '#9B9C9D',
     card: '#F1F1F3',
     subText: '#9B9C9D',
