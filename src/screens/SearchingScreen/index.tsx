@@ -42,8 +42,16 @@ const SearchingScreen = ({route}: any) => {
   const [dialogInfo, setDialogInfo] = useState<DialogInfo>();
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const navigator = useNavigation();
-  const {token} = route.params;
   const {userId} = route.params;
+
+  // ANIMATED
+  // const scrollY = new Animated.Value(0);
+  // const diffClampScrollY = Animated.diffClamp(scrollY, 0, 80);
+  // const headerTranslateY = diffClampScrollY.interpolate({
+  //   inputRange: [0, 80],
+  //   outputRange: [80, 0],
+  //   extrapolate: 'clamp',
+  // });
 
   //FUNCTION
   const onBack = () => navigator.goBack();
@@ -56,7 +64,7 @@ const SearchingScreen = ({route}: any) => {
   const onContact = async () => {
     setIsLoading(true);
     const friendId = dialogInfo?.id || ' ';
-    const res: any = await ContactApi.addFriend(token, friendId);
+    const res: any = await ContactApi.addFriend(userId, friendId);
     console.log(res);
     navigator.navigate(Route.ChatScreen, {
       roomId: res.data.roomId,
@@ -79,8 +87,8 @@ const SearchingScreen = ({route}: any) => {
     });
   };
 
-  const getListFriends = async (token: string) => {
-    const res = await ContactApi.getFriends(token);
+  const getListFriends = async (user_Id: string) => {
+    const res = await ContactApi.getFriends(user_Id);
     return res.data;
   };
 
@@ -95,7 +103,7 @@ const SearchingScreen = ({route}: any) => {
   };
 
   const onSearch = useCallback(async () => {
-    const res = await search(searchKey, token);
+    const res = await search(searchKey, userId);
     setSearchResult(res.data);
   }, [searchKey]);
 
@@ -105,7 +113,7 @@ const SearchingScreen = ({route}: any) => {
     avatar: string,
     email: string,
   ) => {
-    const res: any = await ContactApi.checkFriendExist(token, friendId);
+    const res: any = await ContactApi.checkFriendExist(userId, friendId);
     if (res.isExist) {
       navigateRoom(userId, friendId, roomName);
     } else {
@@ -151,11 +159,13 @@ const SearchingScreen = ({route}: any) => {
 
   const renderSearchResultKey = (item: string, index: number) => index + '';
 
+  const renderBottom = () => <View style={style.whiteSpace}></View>;
+
   // SIDE EFFECT
 
   useEffect(() => {
     const getFriendsData = async () => {
-      const res = await getListFriends(token);
+      const res = await getListFriends(userId);
       setFriends(res);
     };
     getFriendsData();
@@ -163,6 +173,7 @@ const SearchingScreen = ({route}: any) => {
 
   return (
     <View style={style.container}>
+      {/* DIALOG */}
       <Overlay isVisible={dialogVisible} onBackdropPress={toggleDialog}>
         <View style={style.dialogContainer}>
           <LinearGradient
@@ -205,6 +216,7 @@ const SearchingScreen = ({route}: any) => {
           </View>
         </View>
       </Overlay>
+      {/* TOP */}
       <LinearGradient
         start={{x: 0, y: 0}}
         end={{x: 1, y: 0}}
@@ -238,8 +250,9 @@ const SearchingScreen = ({route}: any) => {
           )}
         </View>
       </LinearGradient>
+      {/* BOTTOM */}
       {searchKey ? (
-        <View>
+        <View style={{flex: 1}}>
           <View style={style.subTitleContainer}>
             <Text style={style.subTxtTitle}>DIRECTORY</Text>
           </View>
@@ -247,10 +260,11 @@ const SearchingScreen = ({route}: any) => {
             data={searchResult}
             renderItem={renderSearchResultItem}
             keyExtractor={renderSearchResultKey}
+            ListFooterComponent={renderBottom}
           />
         </View>
       ) : (
-        <View>
+        <View style={{flex: 1}}>
           <View style={style.subTitleContainer}>
             <Text style={style.subTxtTitle}>FRIENDS</Text>
           </View>
@@ -258,6 +272,7 @@ const SearchingScreen = ({route}: any) => {
             data={friends}
             renderItem={renderFriendItem}
             keyExtractor={renderFriendKey}
+            ListFooterComponent={renderBottom}
           />
         </View>
       )}
@@ -343,6 +358,11 @@ const style = StyleSheet.create({
     color: '#919095',
     fontSize: hs(12),
     fontWeight: '700',
+  },
+  whiteSpace: {
+    backgroundColor: 'transparent',
+    height: hs(20),
+    width: '100%',
   },
 });
 export default SearchingScreen;

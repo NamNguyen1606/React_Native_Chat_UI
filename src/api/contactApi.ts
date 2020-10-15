@@ -1,32 +1,24 @@
 import AxiosClient from './axiosClient';
 
 class ContactApi {
-  static getRooms = (token: any) => {
+  static getRooms = (userId: any) => {
     const url = 'contact/rooms';
-    return AxiosClient.get(url, {headers: {token: token}});
+    return AxiosClient.post(url, {userId: userId});
   };
 
-  static getFriends = (token: any) => {
+  static getFriends = (userId: any) => {
     const url = 'contact/friends';
-    return AxiosClient.get(url, {headers: {token: token}});
+    return AxiosClient.post(url, {userId: userId});
   };
 
-  static checkFriendExist = (token: string, friendId: string) => {
+  static checkFriendExist = (userId: string, friendId: string) => {
     const url = 'contact/checkFriendExist';
-    return AxiosClient.post(
-      url,
-      {friendId: friendId},
-      {headers: {token: token}},
-    );
+    return AxiosClient.post(url, {friendId: friendId, userId: userId});
   };
 
-  static addFriend = (token: string, recipientId: string) => {
-    const url = 'contact/friends';
-    return AxiosClient.post(
-      url,
-      {recipientId: recipientId},
-      {headers: {token: token}},
-    );
+  static addFriend = (userId: string, recipientId: string) => {
+    const url = 'contact/friends/addFriend';
+    return AxiosClient.post(url, {recipientId: recipientId, userId: userId});
   };
 }
 

@@ -2,47 +2,41 @@ interface IUser {
   id?: string;
   fullName: string;
   email: string;
-  password: string;
   avatar: string;
   isActive?: boolean;
-  token?: string;
   phone?: string;
+  accountId: string;
+  accountType: string;
 }
-// firstName: string,
-// lastName: string,
-// email: string,
-// password: string,
-// avatar: string,
-// isActive: boolean,
-// token: string,
+
 class User {
   private _id: string;
   private _fullName: string;
   private _email: string;
-  private _password: string;
   private _avatar: string;
   private _isActive: boolean;
-  private _token: string;
   private _phone: string;
+  private _accountId: string;
+  private _accountType: string;
 
   constructor({
     id = '',
     fullName = '',
     email = '',
     avatar = '',
-    password = '',
     isActive = false,
-    token = '',
     phone = '',
+    accountId = '',
+    accountType = '',
   }: IUser) {
     this._id = id;
     this._fullName = fullName;
     this._email = email;
-    this._password = password;
     this._avatar = avatar;
     this._isActive = isActive;
-    this._token = token;
     this._phone = phone;
+    this._accountId = accountId;
+    this._accountType = accountType;
   }
 
   get id(): string {
@@ -66,13 +60,6 @@ class User {
     this._email = value;
   }
 
-  get password(): string {
-    return this._password;
-  }
-  set password(value: string) {
-    this._password = value;
-  }
-
   get avatar(): string {
     return this._avatar;
   }
@@ -87,18 +74,25 @@ class User {
     this._isActive = value;
   }
 
-  get token(): string {
-    return this._token;
-  }
-  set token(value: string) {
-    this._token = value;
-  }
-
   get phone(): string {
     return this._phone;
   }
   set phone(value: string) {
     this._phone = value;
+  }
+
+  get accountId(): string {
+    return this._accountId;
+  }
+  set accountId(value: string) {
+    this._accountId = value;
+  }
+
+  get accountType(): string {
+    return this._accountType;
+  }
+  set accountType(value: string) {
+    this._accountType = value;
   }
 }
 

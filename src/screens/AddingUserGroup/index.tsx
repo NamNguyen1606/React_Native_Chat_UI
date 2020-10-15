@@ -20,7 +20,6 @@ const AddingUserGroupScreen = ({route}: any) => {
   const {colors} = useTheme();
   const navigator = useNavigation();
   const {groupName} = route.params;
-  const [token, setToken] = useState<any>('');
   const [users, setUsers] = useState<any[]>([]);
   const [friends, setFriends] = useState<any[]>([]);
   const [searchResults, setSearchResults] = useState<any[]>([]);
@@ -36,12 +35,12 @@ const AddingUserGroupScreen = ({route}: any) => {
   const onSearch = useCallback(
     async (value: string) => {
       setSearchKey(value);
-      if (token) {
-        const res = await search(searchKey, token);
+      if (userId) {
+        const res = await search(searchKey, userId);
         setSearchResults(res.data);
       }
     },
-    [searchKey, token],
+    [searchKey, userId],
   );
 
   const onCreateGroup = async () => {
@@ -50,7 +49,14 @@ const AddingUserGroupScreen = ({route}: any) => {
       userIdList.push(obj.id);
     }
 
-    const res = await RoomApi.createRoom(userId, userIdList, groupName);
+    const res = await RoomApi.createRoom(
+      userId,
+      userIdList,
+      ['5f857b238c12c84e3c613ec6'],
+      groupName,
+      '1998',
+      '123',
+    );
     console.log(userId);
     console.log(res);
     navigator.navigate(Route.HomeScreen);
@@ -70,8 +76,8 @@ const AddingUserGroupScreen = ({route}: any) => {
     setUsers(result);
   };
 
-  const getListFriends = async (token: string) => {
-    const res = await ContactApi.getFriends(token);
+  const getListFriends = async (user_Id: string) => {
+    const res = await ContactApi.getFriends(user_Id);
     return res.data;
   };
 
@@ -117,12 +123,11 @@ const AddingUserGroupScreen = ({route}: any) => {
   useEffect(() => {
     const getUserInfo = async () => {
       const info = await Store.getUserData();
-      const res = await getListFriends(info._token);
+      const res = await getListFriends(info._id);
       for (let obj of res) {
         obj.isCheck = false;
       }
       setUserId(info._id);
-      setToken(info._token);
       setFriends(res);
     };
     getUserInfo();
@@ -205,7 +210,7 @@ const AddingUserGroupScreen = ({route}: any) => {
             showsHorizontalScrollIndicator={false}
           />
         </Animated.View>
-        <View>
+        <View style={{flex: 1}}>
           <View style={style.subTitleContainer}>
             <Text style={style.subTxtTitle}>FRIENDS</Text>
           </View>

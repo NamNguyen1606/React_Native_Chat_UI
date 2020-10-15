@@ -13,12 +13,22 @@ class RoomApi {
     });
   };
 
-  static createRoom = (ownerId: string, users: string[], groupName: string) => {
+  static createRoom = (
+    userId: string,
+    users: string[],
+    admins: string[],
+    groupName: string,
+    groupId: string,
+    groupType: string,
+  ) => {
     const url = 'rooms/group';
     return AxiosClient.post(url, {
-      ownerId: ownerId,
+      userId: userId,
       users: users,
+      admins: admins,
       groupName: groupName,
+      groupId: groupId,
+      groupType: groupType,
     });
   };
 }

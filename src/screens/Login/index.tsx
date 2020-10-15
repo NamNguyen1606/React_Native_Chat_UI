@@ -36,16 +36,18 @@ const LoginScreen = () => {
   const onLogin = async () => {
     setIsLoading(true);
     // const res: any = await UserApi.login(info.email, info.password);
-    const res: any = await UserApi.login(info.email, '123456');
+    const res: any = await UserApi.login(info.email);
+    console.log(res.data);
     if (res.success) {
+      const userData = res.data;
       const user = new User({
-        id: res.data._id,
-        fullName: res.data.fullName,
-        email: res.data.email,
-        password: res.data.password,
-        phone: res.data.phone,
-        token: res.data.token,
-        avatar: res.data.avatar,
+        id: userData._id,
+        fullName: userData.fullName,
+        email: userData.email,
+        phone: userData.phone,
+        avatar: userData.avatar,
+        accountId: userData.accountId,
+        accountType: userData.accountType,
       });
       await Store.saveUserData(user);
       navigator.navigate(Route.HomeScreen);
@@ -104,6 +106,7 @@ const LoginScreen = () => {
     </KeyboardAwareScrollView>
   );
 };
+
 const style = StyleSheet.create({
   container: {
     flex: 1,

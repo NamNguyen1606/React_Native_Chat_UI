@@ -1,41 +1,28 @@
 import React, {useContext, useState, useEffect} from 'react';
-import {
-  View,
-  StyleSheet,
-  TextInput,
-  TouchableOpacity,
-  Text,
-  Image,
-} from 'react-native';
+import {View, StyleSheet, TouchableOpacity, Image} from 'react-native';
 import {useNavigation, useTheme} from '@react-navigation/native';
 import Route from '../../utils/route';
-import MessageApi from '../../api/message.api';
 import {vs, hs, ms} from '../../utils/scaling';
-import {Icon, Overlay} from 'react-native-elements';
+import {Icon} from 'react-native-elements';
 import RoomCard from '../../components/RoomCard';
 import {ThemeContext} from '../../../App';
-import {Color} from '../../utils/theme';
 import Store from '../../utils/asyncStore';
-import RoomApi from '../../api/roomApi';
 import SocketName from '../../utils/socketNamespace';
 import {Dimensions} from 'react-native';
 import ContactApi from '../../api/contactApi';
 import {FlatList} from 'react-native-gesture-handler';
-import User from '../../models/user.model';
-import {CreatingGroupScreen} from '..';
 import SOCKET from '../../utils/socket';
 
 const RoomsScreen = () => {
   let [userAvatar, setUserAvatar] = useState<string>(
     'https://www.vippng.com/png/detail/416-4161690_empty-profile-picture-blank-avatar-image-circle.png',
   );
-  const [searchKey, setSearchKey] = useState<String>('');
+  // const [searchKey, setSearchKey] = useState<String>('');
   const [rooms, setRooms] = useState<any[]>([]);
   const [socketData, setSocketData] = useState<any>();
   const [socketNewRoom, setSocketNewRoom] = useState<any>();
   const [userInfo, setUserInfo] = useState<any>();
-  const [userActiveList, setUserActiveList] = useState<[]>([]);
-
+  const [roomIdActive, setRoomIdActive] = useState<string>('');
   const navigator = useNavigation();
   const {isDarkMode, setIsDarkMode} = useContext(ThemeContext);
   const {colors} = useTheme();
@@ -51,7 +38,6 @@ const RoomsScreen = () => {
 
   const onSearching = () =>
     navigator.navigate(Route.SearchingScreen, {
-      token: userInfo._token,
       userId: userInfo._id,
     });
 
@@ -68,9 +54,21 @@ const RoomsScreen = () => {
     }
   };
 
-  const getRooms = async (token: string) => {
+  const updateActiveRoom = (roomId: string) => {
+    const tempRooms: any[] = rooms;
+
+    const index = rooms.findIndex((obj) => obj.roomData.roomId === roomId);
+    if (index !== -1) {
+      console.log(rooms);
+      tempRooms[index].roomInfo.isActive = true;
+      console.log(tempRooms);
+      setRooms(tempRooms);
+    }
+  };
+
+  const getRooms = async (userId: string) => {
     try {
-      const res = await ContactApi.getRooms(token);
+      const res = await ContactApi.getRooms(userId);
       setRooms(res.data);
     } catch (err) {
       console.log(err);
@@ -83,7 +81,7 @@ const RoomsScreen = () => {
       const user = await Store.getUserData();
       setUserInfo(user);
       setUserAvatar(user._avatar);
-      getRooms(user._token);
+      getRooms(user._id);
       SOCKET.emit(SocketName.Join, user._id);
     };
 
@@ -94,7 +92,6 @@ const RoomsScreen = () => {
 
   useEffect(() => {
     SOCKET.on(SocketName.NewRoom, (data: any) => {
-      console.log(data);
       setSocketData(data);
     });
   }, []);
@@ -118,13 +115,24 @@ const RoomsScreen = () => {
     }
   }, [socketNewRoom]);
 
+  //User active
+  useEffect(() => {
+    SOCKET.on(SocketName.Active, (roomId: string) => setRoomIdActive(roomId));
+  }, []);
+
+  useEffect(() => {
+    if (roomIdActive) {
+      updateActiveRoom(roomIdActive);
+    }
+  }, [roomIdActive]);
   // FLATLIST
   const renderRooms = ({item}: any) => (
     <RoomCard
       name={item.roomInfo.fullName}
       lastMsg={item.message.newMessage}
       lastTimeActive="1h ago"
-      isOnline={true}
+      isOnline={item.roomInfo.isActive}
+      isGroup={item.roomData.isGroup}
       img={item.roomInfo.avatar}
       onPress={() =>
         onUserCardPress(item.roomData.roomId, item.roomInfo.fullName)

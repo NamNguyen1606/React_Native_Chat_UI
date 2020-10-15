@@ -9,6 +9,7 @@ interface Props {
   lastMsg: string;
   lastTimeActive: string;
   isOnline: boolean;
+  isGroup: boolean;
   onPress?: () => void;
 }
 
@@ -24,14 +25,16 @@ const RoomCard: React.FC<Props> = (props) => {
               uri: props.img,
             }}
           />
-          <View
-            style={[
-              style.activePoint,
-              props.isOnline
-                ? {backgroundColor: '#4ADC61'}
-                : {backgroundColor: '#D0D0D0'},
-            ]}
-          />
+          {props.isGroup || (
+            <View
+              style={[
+                style.activePoint,
+                props.isOnline
+                  ? {backgroundColor: '#4ADC61'}
+                  : {backgroundColor: '#D0D0D0'},
+              ]}
+            />
+          )}
         </View>
         <View style={{...style.contentHolder, borderColor: colors.border}}>
           <View style={style.messageHolder}>
@@ -55,7 +58,7 @@ const RoomCard: React.FC<Props> = (props) => {
 
 const style = StyleSheet.create({
   container: {
-    height: vs(80),
+    height: hs(80),
     flexDirection: 'row',
   },
   avatarContainer: {
